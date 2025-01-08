@@ -2,7 +2,7 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 const currentDate = new Date();
-function logTheEvent(message = "",filename="Logs.log") {
+function logTheEvent(message: string = "", filename: string = "Logs.log") {
   let TheDate = `${currentDate.getUTCDate()}/${
     currentDate.getMonth() + 1
   }/${currentDate.getFullYear()}`;
