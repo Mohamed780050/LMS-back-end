@@ -6,3 +6,7 @@ export interface teacherInterface {
   courses: string[];
   students: string[];
 }
+export interface authInterface{
+  identifier:string;
+  password:string
+}
