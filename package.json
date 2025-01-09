@@ -1,17 +1,17 @@
 {
   "name": "lms-back-end",
   "version": "1.0.0",
-  "main": "./src/app.ts",
+  "main": "./dist/app.js",
   "scripts": {
-    "start": "ts-node .",
-    "dev": "ts-node-dev .",
-    "build": "tsc",
-    "test":"node ./dist/app.js"
+    "start": "node .",
+    "dev": "nodemon .",
+    "build": "tsc -w",
+    "test": "node ./dist/app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "description": "",
   "dependencies": {
     "ajv": "^8.17.1",
@@ -22,14 +22,14 @@
     "express": "^5.0.1",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
+    "lms-back-end": "file:",
     "mongoose": "^8.9.3"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.5",
-    "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
+    "nodemon": "^3.1.9",
     "typescript": "^5.7.3"
   }
 }

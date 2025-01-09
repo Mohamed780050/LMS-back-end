@@ -2,7 +2,9 @@ import express from "express";
 import helmet from "helmet";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import logTheEvent from "./middlewares/logEventsMW";
+import mongoose from "mongoose";
+import logTheEvent from "./middlewares/logEventsMW.js";
+import teacherRoute from "./Routes/teacherRoute.js";
 
 dotenv.config();
 
@@ -25,6 +27,15 @@ app.use((req, res, nxt) => {
   nxt();
 });
 
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
-});
+app.use("/teachers", teacherRoute);
+
+mongoose
+  .connect(`${process.env.DatabaseLink}`)
+  .then(() =>
+    app.listen(port, () => {
+      console.log(`Server is running at http://localhost:${port}`);
+    })
+  )
+  .catch((err) => {
+    console.log(err);
+  });
