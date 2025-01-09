@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Teacher from "../models/teacherModel.js";
 import teacherModel from "../models/database/teacher.js";
+import bcrypt from "bcrypt"
 
 async function getAllTeachers(req: Request, res: Response) {
   try {
@@ -25,9 +26,10 @@ async function addNewTeacher(req: Request, res: Response) {
       res.status(400).json({ message: "The email is already taken" });
       return;
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
     const teacher = new Teacher(
       userName,
-      password,
+      hashedPassword,
       email,
       avatar ? avatar : "",
       courses ? courses : [],
