@@ -32,4 +32,13 @@ export default class Teacher implements teacherInterface {
       console.log(err);
     }
   }
+  async saveTeacher() {
+    try {
+      await teacherModel.create(this);
+      return { statusCode: 201, data: "Teacher created" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 400, data: "something went wrong" };
+    }
+  }
 }
