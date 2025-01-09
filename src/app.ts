@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import logTheEvent from "./middlewares/logEventsMW.js";
 import teacherRoute from "./Routes/teacherRoute.js";
+import auth from "./Routes/authRoute.js";
+import errorMW from "./middlewares/errorMW.js";
 
 dotenv.config();
 
@@ -27,8 +29,12 @@ app.use((req, res, nxt) => {
   nxt();
 });
 
+// Routes
+app.use("/auth", auth);
 app.use("/teachers", teacherRoute);
 
+app.use(errorMW);
+// Database connection
 mongoose
   .connect(`${process.env.DatabaseLink}`)
   .then(() =>
