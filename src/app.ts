@@ -7,6 +7,7 @@ import logTheEvent from "./middlewares/logEventsMW.js";
 import teacherRoute from "./Routes/teacherRoute.js";
 import auth from "./Routes/authRoute.js";
 import errorMW from "./middlewares/errorMW.js";
+import student from "./Routes/studentRoute.js";
 
 dotenv.config();
 
@@ -31,7 +32,8 @@ app.use((req, res, nxt) => {
 
 // Routes
 app.use("/auth", auth);
-app.use("/teachers", teacherRoute);
+app.use("/teacher", teacherRoute);
+app.use("/student", student);
 
 app.use(errorMW);
 // Database connection
