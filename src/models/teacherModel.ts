@@ -1,8 +1,9 @@
 import { teacherInterface } from "../interfaces/interfaces";
 import teacherModel from "./database/teacher.js";
+import bcrypt from "bcrypt";
 export default class Teacher implements teacherInterface {
-  userName: string;
   password: string;
+  userName: string;
   email: string;
   avatar: string;
   courses: string[];
@@ -30,15 +31,28 @@ export default class Teacher implements teacherInterface {
       return { statusCode: 200, data: response };
     } catch (err) {
       console.log(err);
+      return { statusCode: 500, data: "server Error" };
     }
   }
   async saveTeacher() {
     try {
-      await teacherModel.create(this);
+      const checkTheTeacher = await teacherModel.findOne({ email: this.email });
+      if (checkTheTeacher) {
+        return { statusCode: 400, data: "The email is already taken" };
+      }
+      const hashedPassword = await bcrypt.hash(this.password, 10);
+      await teacherModel.create({
+        userName: this.userName,
+        email: this.email,
+        password: hashedPassword,
+        avatar: this.avatar,
+        courses: this.courses,
+        students: this.students,
+      });
       return { statusCode: 201, data: "Teacher created" };
     } catch (err) {
       console.log(err);
-      return { statusCode: 400, data: "something went wrong" };
+      return { statusCode: 500, data: "something went wrong" };
     }
   }
 }

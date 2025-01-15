@@ -1,13 +1,10 @@
 import { Request, Response } from "express";
 import Teacher from "../models/teacherModel.js";
-import teacherModel from "../models/database/teacher.js";
-import bcrypt from "bcrypt"
 
 async function getAllTeachers(req: Request, res: Response) {
   try {
     const response = await Teacher.getAllTeachers();
-    const statusCode = response?.statusCode || 200;
-    res.status(statusCode).json({ message: response?.data });
+    res.status(response.statusCode).json({ message: response.data });
   } catch (err) {
     console.log(err);
   }
@@ -21,23 +18,16 @@ async function addNewTeacher(req: Request, res: Response) {
         .json({ message: "Please provide all the required fields" });
       return;
     }
-    const checkTheTeacher = await teacherModel.findOne({ email: email });
-    if (checkTheTeacher) {
-      res.status(400).json({ message: "The email is already taken" });
-      return;
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
     const teacher = new Teacher(
       userName,
-      hashedPassword,
+      password,
       email,
       avatar ? avatar : "",
       courses ? courses : [],
       students ? students : []
     );
     const response = await teacher.saveTeacher();
-    const statusCode = response?.statusCode || 204;
-    res.status(statusCode).json({ message: response?.data });
+    res.status(response.statusCode).json(response.data);
   } catch (err) {
     console.log(err);
   }
