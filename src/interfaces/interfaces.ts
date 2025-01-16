@@ -33,3 +33,22 @@ export interface studentInterface {
     chapters: { chapterId: string; done: boolean }[];
   }[];
 }
+export interface courseInterface {
+  courseName: string;
+  description: string;
+  imageURL: string;
+  price: number;
+  isPublished: boolean;
+  date: {
+    normal: string;
+    full: string;
+  };
+  rating: number;
+  category: string;
+  teacherId: string;
+  completed: number;
+  total: number;
+  students: string[];
+  chapters: string[];
+  attachments: string[];
+}
