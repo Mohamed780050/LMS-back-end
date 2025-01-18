@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "main": "./dist/app.js",
   "scripts": {
-    "start": "node .",
-    "dev": "nodemon .",
-    "build": "tsc -w",
-    "test": "node ./dist/app.js"
+    "start": "set NODE_ENV=production && node .",
+    "dev": "set NODE_ENV=development && nodemon .",
+    "build": "tsc -w"
   },
   "keywords": [],
   "author": "",

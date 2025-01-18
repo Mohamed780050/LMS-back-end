@@ -1,7 +1,7 @@
 import courseDB from "./database/course.js";
 import { courseInterface } from "../interfaces/interfaces";
 import teacherDB from "./database/teacher.js";
-import {ObjectId} from "mongoose"
+import mongoose from "mongoose";
 
 class Course implements courseInterface {
   courseName: string;
@@ -69,11 +69,17 @@ class Course implements courseInterface {
   }
   static async createACourse(courseName: string, teacherId: string) {
     try {
+      // check if the course exists
       const checkCourseName = await courseDB.find({ courseName: courseName });
-      if (checkCourseName.length) return { statusCode: 400, data: "Use another course name" };
-      // TODO: check if the teacher id is objectId or not
+      if (checkCourseName.length)
+        return { statusCode: 400, data: "Use another course name" };
+      // check if the id is valid
+      const isObjectId = mongoose.Types.ObjectId.isValid(teacherId);
+      if (!isObjectId) return { statusCode: 400, data: "Use a valid id" };
+      // check if the teacher is in the data base
       const checkTheTeacherId = await teacherDB.findById(teacherId);
-      if(!checkTheTeacherId) return { statusCode: 400, data: "Teacher doesn\'t appear" };
+      if (!checkTheTeacherId)
+        return { statusCode: 400, data: "Teacher doesn't appear" };
       await courseDB.create({
         courseName: courseName,
         teacherId: teacherId,
