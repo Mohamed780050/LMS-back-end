@@ -1,5 +1,5 @@
 import { teacherInterface } from "../interfaces/interfaces";
-import teacherModel from "./database/teacher.js";
+import teacherDB from "./database/teacher.js";
 import bcrypt from "bcrypt";
 export default class Teacher implements teacherInterface {
   password: string;
@@ -25,7 +25,7 @@ export default class Teacher implements teacherInterface {
   }
   static async getAllTeachers() {
     try {
-      const response = await teacherModel.find();
+      const response = await teacherDB.find();
       if (response.length === 0)
         return { statusCode: 404, data: "No teachers in the data base" };
       return { statusCode: 200, data: response };
@@ -36,12 +36,12 @@ export default class Teacher implements teacherInterface {
   }
   async saveTeacher() {
     try {
-      const checkTheTeacher = await teacherModel.findOne({ email: this.email });
+      const checkTheTeacher = await teacherDB.findOne({ email: this.email });
       if (checkTheTeacher) {
         return { statusCode: 400, data: "The email is already taken" };
       }
       const hashedPassword = await bcrypt.hash(this.password, 10);
-      await teacherModel.create({
+      await teacherDB.create({
         userName: this.userName,
         email: this.email,
         password: hashedPassword,

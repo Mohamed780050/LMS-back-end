@@ -32,5 +32,5 @@ const teacherSchema = new Schema<teacherInterface>(
   },
   { versionKey: false }
 );
-const teacherModel = model<teacherInterface>("teachers", teacherSchema,"teachers");
-export default teacherModel;
+const teacherDB = model<teacherInterface>("teachers", teacherSchema,"teachers");
+export default teacherDB;
