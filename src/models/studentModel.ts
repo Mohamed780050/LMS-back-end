@@ -1,7 +1,7 @@
 import studentBD from "./database/student.js";
 import { studentInterface } from "../interfaces/interfaces";
 import bcrypt from "bcrypt";
-class Student implements studentInterface {
+class Student implements Omit<studentInterface, "refreshToken"> {
   userName: string;
   email: string;
   password: string;

@@ -27,12 +27,20 @@ class Auth implements authInterface {
       );
       if (!passwordValidate)
         return { statusCode: 404, data: "Invalid identifier or password" };
-      const Token = jwt.sign(
+      const accessToken = jwt.sign(
         { userId: user._id },
         `${process.env.ACCESS_TOKEN_SECRET}`,
         { expiresIn: process.env.ACCESS_TOKEN_AGE }
       );
-      return { statusCode: 200, data: { jwt: Token } };
+      const refreshToken = jwt.sign(
+        { userId: user._id },
+        `${process.env.REFRESH_TOKEN_SECRET}`,
+        { expiresIn: process.env.REFRESH_TOKEN_AGE }
+      );
+      await teacherDB.findByIdAndUpdate(`${user._id}`, {
+        $set: { refreshToken: refreshToken },
+      });
+      return { statusCode: 200, data: { jwt: accessToken } };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "something went wrong" };
@@ -51,12 +59,20 @@ class Auth implements authInterface {
       );
       if (!checkPassword)
         return { statusCode: 400, data: "Invalid identifier or password" };
-      const Token = jwt.sign(
+      const accessToken = jwt.sign(
         { userId: findStudent._id },
         `${process.env.ACCESS_TOKEN_SECRET}`,
         { expiresIn: process.env.ACCESS_TOKEN_AGE }
       );
-      return { statusCode: 200, data: { jwt: Token } };
+      const refreshToken = jwt.sign(
+        { userId: findStudent._id },
+        `${process.env.REFRESH_TOKEN_SECRET}`,
+        { expiresIn: process.env.REFRESH_TOKEN_AGE }
+      );
+      await studentBD.findByIdAndUpdate(`${findStudent._id}`, {
+        $set: { refreshToken: refreshToken },
+      });
+      return { statusCode: 200, data: { jwt: accessToken } };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "something went wrong" };

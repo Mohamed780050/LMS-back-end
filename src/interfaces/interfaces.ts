@@ -15,6 +15,7 @@ export interface teacherInterface {
   email: string;
   password: string;
   avatar: string;
+  refreshToken:string;
   courses: string[];
   students: string[];
 }
@@ -27,6 +28,7 @@ export interface studentInterface {
   email: string;
   password: string;
   avatar?: string;
+  refreshToken:string;
   courses?: {
     courseId: string;
     done: boolean;

@@ -1,4 +1,4 @@
-import { Schema,model } from "mongoose";
+import { Schema, model } from "mongoose";
 import { teacherInterface } from "../../interfaces/interfaces";
 const teacherSchema = new Schema<teacherInterface>(
   {
@@ -29,8 +29,16 @@ const teacherSchema = new Schema<teacherInterface>(
       type: [String],
       required: false,
     },
+    refreshToken: {
+      type: String,
+      default: "",
+    },
   },
   { versionKey: false }
 );
-const teacherDB = model<teacherInterface>("teachers", teacherSchema,"teachers");
+const teacherDB = model<teacherInterface>(
+  "teachers",
+  teacherSchema,
+  "teachers"
+);
 export default teacherDB;

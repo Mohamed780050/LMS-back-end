@@ -45,6 +45,10 @@ const studentSchema = new Schema<studentInterface>(
       type: [coursesSchema],
       default: [],
     },
+    refreshToken: {
+      type: String,
+      default: "",
+    },
   },
   { versionKey: false }
 );

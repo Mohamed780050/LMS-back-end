@@ -12,6 +12,10 @@ const Schema: JSONSchemaType<Omit<studentInterface, "courses" | "avatar">> = {
     password: {
       type: "string",
     },
+    refreshToken: {
+      type: "string",
+      default: "",
+    },
   },
   required: ["email", "userName", "password"],
 };

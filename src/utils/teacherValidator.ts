@@ -21,7 +21,7 @@ const Schema: JSONSchemaType<teacherInterface> = {
     courses: {
       type: "array",
       items: {
-        type: "string", 
+        type: "string",
       },
     },
     students: {
@@ -29,6 +29,10 @@ const Schema: JSONSchemaType<teacherInterface> = {
       items: {
         type: "string",
       },
+    },
+    refreshToken: {
+      type: "string",
+      default: "",
     },
   },
   required: ["userName", "email", "password"],
