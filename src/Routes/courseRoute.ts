@@ -1,5 +1,9 @@
-import express from "express"
-import courseControl from "../controller/courseControl.js"
-const router = express.Router()
-router.route("/").get(courseControl.getAllCourses).post(courseControl.addANewCourse)
-export default router
+import express from "express";
+import courseControl from "../controller/courseControl.js";
+import JWTverifyMW from "../middlewares/JWTverifyMW.js";
+const router = express.Router();
+router
+  .route("/")
+  .get(JWTverifyMW, courseControl.getAllCourses)
+  .post(JWTverifyMW,courseControl.addANewCourse);
+export default router;

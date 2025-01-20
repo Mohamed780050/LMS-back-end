@@ -1,4 +1,5 @@
-import teacherModel from "./database/teacher.js";
+import teacherDB from "./database/teacher.js";
+import studentBD from "./database/student.js";
 import { authInterface } from "../interfaces/interfaces";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -14,11 +15,11 @@ class Auth implements authInterface {
   async teacherLogin() {
     try {
       // check if the teacher is in the database
-      const user = await teacherModel.findOne({
+      const user = await teacherDB.findOne({
         $or: [{ userName: this.identifier }, { email: this.identifier }],
       });
       if (!user)
-        return { statusCode: 404, data: "Invalid identifier or password" };
+        return { statusCode: 400, data: "Invalid identifier or password" };
       // check on password
       const passwordValidate = await bcrypt.compare(
         this.password,
@@ -26,11 +27,39 @@ class Auth implements authInterface {
       );
       if (!passwordValidate)
         return { statusCode: 404, data: "Invalid identifier or password" };
-      const Token = jwt.sign({ userId: user._id }, `${process.env.JWTSecret}`);
+      const Token = jwt.sign(
+        { userId: user._id },
+        `${process.env.ACCESS_TOKEN_SECRET}`,
+        { expiresIn: process.env.ACCESS_TOKEN_AGE }
+      );
       return { statusCode: 200, data: { jwt: Token } };
     } catch (err) {
       console.log(err);
-      return { statusCode: 400, data: "something went wrong" };
+      return { statusCode: 500, data: "something went wrong" };
+    }
+  }
+  async studentLogin() {
+    try {
+      const findStudent = await studentBD.findOne({
+        $or: [{ userName: this.identifier }, { email: this.identifier }],
+      });
+      if (!findStudent)
+        return { statusCode: 400, data: "Invalid identifier or password" };
+      const checkPassword = await bcrypt.compare(
+        this.password,
+        findStudent.password
+      );
+      if (!checkPassword)
+        return { statusCode: 400, data: "Invalid identifier or password" };
+      const Token = jwt.sign(
+        { userId: findStudent._id },
+        `${process.env.ACCESS_TOKEN_SECRET}`,
+        { expiresIn: process.env.ACCESS_TOKEN_AGE }
+      );
+      return { statusCode: 200, data: { jwt: Token } };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "something went wrong" };
     }
   }
 }
