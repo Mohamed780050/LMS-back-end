@@ -9,6 +9,13 @@ async function teacherLogin(req: Request, res: Response) {
     }
     const teacher = new Auth(identifier, password);
     const response = await teacher.teacherLogin();
+    if (typeof response.data === "object") {
+      res.set("accessToken", response.data.accessToken);
+      res.cookie("refreshToken", response.data.refreshToken, {
+        httpOnly: true,
+        secure: true,
+      });
+    }
     res.status(response.statusCode).json(response.data);
   } catch (err) {
     console.log(err);

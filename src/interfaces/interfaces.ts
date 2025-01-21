@@ -1,3 +1,4 @@
+import { JwtPayload } from "jsonwebtoken";
 export interface chapterInterface {
   chapterName: string;
   courseId: string;
@@ -15,7 +16,7 @@ export interface teacherInterface {
   email: string;
   password: string;
   avatar: string;
-  refreshToken:string;
+  refreshToken: string;
   courses: string[];
   students: string[];
 }
@@ -28,7 +29,7 @@ export interface studentInterface {
   email: string;
   password: string;
   avatar?: string;
-  refreshToken:string;
+  refreshToken: string;
   courses?: {
     courseId: string;
     done: boolean;
@@ -53,4 +54,8 @@ export interface courseInterface {
   students: string[];
   chapters: string[];
   attachments: string[];
+}
+
+export interface refreshTokenPayloadInterface extends JwtPayload {
+  userId: string;
 }

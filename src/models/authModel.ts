@@ -40,7 +40,7 @@ class Auth implements authInterface {
       await teacherDB.findByIdAndUpdate(`${user._id}`, {
         $set: { refreshToken: refreshToken },
       });
-      return { statusCode: 200, data: { jwt: accessToken } };
+      return { statusCode: 200, data: { accessToken, refreshToken } };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "something went wrong" };
@@ -72,7 +72,7 @@ class Auth implements authInterface {
       await studentBD.findByIdAndUpdate(`${findStudent._id}`, {
         $set: { refreshToken: refreshToken },
       });
-      return { statusCode: 200, data: { jwt: accessToken } };
+      return { statusCode: 200, data: { accessToken, refreshToken } };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "something went wrong" };
