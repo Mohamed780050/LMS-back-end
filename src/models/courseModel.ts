@@ -55,11 +55,10 @@ class Course implements courseInterface {
     this.chapters = chapters;
     this.attachments = attachments;
   }
-  static async getAllCourses() {
+  static async getACourse(courseId:string) {
     try {
-      const courses = await courseDB.find({});
-      console.log(courseDB);
-      if (courses.length === 0)
+      const courses = await courseDB.findById(`${courseId}`);
+      if (!courses)
         return { statusCode: 204, data: "there is no courses" };
       return { statusCode: 200, data: courses };
     } catch (err) {

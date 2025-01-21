@@ -1,8 +1,9 @@
 import Course from "../models/courseModel.js";
 import { Request, Response } from "express";
-async function getAllCourses(req: Request, res: Response) {
+async function getACourse(req: Request, res: Response) {
   try {
-    const response = await Course.getAllCourses();
+    const { id } = req.params;
+    const response = await Course.getACourse(id);
     res.status(response.statusCode).json({ data: response.data });
   } catch (err) {
     console.log(err);
@@ -23,4 +24,4 @@ async function addANewCourse(req: Request, res: Response) {
   }
 }
 
-export default { getAllCourses, addANewCourse };
+export default { getACourse, addANewCourse };

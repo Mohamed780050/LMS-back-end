@@ -26,6 +26,7 @@ async function teacherLogin(req: Request, res: Response) {
       );
   } catch (err) {
     console.log(err);
+    res.status(500).json({ data: "Inter server Error" });
   }
 }
 async function studentLogin(req: Request, res: Response) {
