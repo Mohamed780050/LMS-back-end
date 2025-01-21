@@ -20,7 +20,8 @@ async function addANewCourse(req: Request, res: Response) {
     if (!courseName || !teacherId) {
       res.status(400).json({ data: "course name and teacher id are required" });
     }
-    const response = await Course.createACourse(courseName, teacherId);
+    const course = new Course(courseName,teacherId);
+    const response = await course.createACourse();
     res.status(response.statusCode).json({ data: response.data });
   } catch (err) {
     console.log(err);

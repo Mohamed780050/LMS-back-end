@@ -1,6 +1,8 @@
 import { Schema, model } from "mongoose";
 import { courseInterface } from "../../interfaces/interfaces";
+import time from "../../utils/time.js";
 
+const date = time();
 const dataSchema = new Schema({
   normal: "String",
   full: "String",
@@ -28,6 +30,11 @@ const courseSchema = new Schema<courseInterface>(
     },
     date: {
       type: dataSchema,
+      default: {
+        normal: `${date.dayNumber}/${date.month}/${date.fullYear}`,
+        full: `${date.hours}  ${date.dayName}  ${date.dayNumber}/${date.month}/${date.fullYear}`,
+      },
+      _id: false,
     },
     rating: {
       type: "Number",

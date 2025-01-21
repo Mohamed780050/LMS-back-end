@@ -18,7 +18,6 @@ export default function JWTverifyMW(
       res.sendStatus(403);
       return;
     }
-    console.log(payload)
     nxt();
   });
 }

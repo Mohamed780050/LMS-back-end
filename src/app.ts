@@ -11,6 +11,7 @@ import student from "./Routes/studentRoute.js";
 import course from "./Routes/courseRoute.js";
 import refreshToken from "./Routes/refreshRoute.js";
 import logout from "./Routes/logoutRoute.js";
+import courses from "./Routes/coursesRoute.js"
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use("/auth", auth);
 app.use("/teacher", teacherRoute);
 app.use("/student", student);
 app.use("/course", course);
+app.use("/courses", courses);
 app.use("/refresh", refreshToken);
 app.use("/logout", logout);
 
