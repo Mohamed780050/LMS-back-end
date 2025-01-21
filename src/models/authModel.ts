@@ -1,6 +1,9 @@
 import teacherDB from "./database/teacher.js";
 import studentBD from "./database/student.js";
-import { authInterface } from "../interfaces/interfaces";
+import {
+  authInterface,
+  refreshTokenPayloadInterface,
+} from "../interfaces/interfaces";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -76,6 +79,44 @@ class Auth implements authInterface {
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "something went wrong" };
+    }
+  }
+  static async teacherLogout(refreshToken: string) {
+    try {
+      const payload = jwt.verify(
+        refreshToken,
+        `${process.env.REFRESH_TOKEN_SECRET}`
+      ) as refreshTokenPayloadInterface;
+      const findTeacher = await teacherDB.findById(`${payload.userId}`, {
+        refreshToken: 1,
+      });
+      if (!findTeacher) return { status: 204, data: "no content" };
+      await teacherDB.findByIdAndUpdate(`${payload.userId}`, {
+        $set: { refreshToken: "" },
+      });
+      return { status: 200, data: "logged out" };
+    } catch (err) {
+      console.log(err);
+      return { status: 500, data: "Internal server error" };
+    }
+  }
+  static async studentLogout(refreshToken: string) {
+    try {
+      const payload = jwt.verify(
+        refreshToken,
+        `${process.env.REFRESH_TOKEN_SECRET}`
+      ) as refreshTokenPayloadInterface;
+      const findStudent = await studentBD.findById(`${payload.userId}`, {
+        refreshToken: 1,
+      });
+      if (!findStudent) return { status: 204, data: "no content" };
+      await studentBD.findByIdAndUpdate(`${payload.userId}`, {
+        $set: { refreshToken: "" },
+      });
+      return { status: 200, data: "logged out" };
+    } catch (err) {
+      console.log(err);
+      return { status: 500, data: "Internal server error" };
     }
   }
 }

@@ -16,7 +16,13 @@ async function teacherLogin(req: Request, res: Response) {
         secure: true,
       });
     }
-    res.status(response.statusCode).json(response.data);
+    res
+      .status(response.statusCode)
+      .json(
+        typeof response.data === "object"
+          ? { accessToken: response.data.accessToken }
+          : response.data
+      );
   } catch (err) {
     console.log(err);
   }
