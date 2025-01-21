@@ -55,12 +55,11 @@ class Course implements courseInterface {
     this.chapters = chapters;
     this.attachments = attachments;
   }
-  static async getACourse(courseId:string) {
+  static async getACourse(courseId: string) {
     try {
-      const courses = await courseDB.findById(`${courseId}`);
-      if (!courses)
-        return { statusCode: 204, data: "there is no courses" };
-      return { statusCode: 200, data: courses };
+      const course = await courseDB.findById(`${courseId}`);
+      if (!course) return { statusCode: 204, data: "there is no course" };
+      return { statusCode: 200, data: course };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal Server Error" };
@@ -79,11 +78,29 @@ class Course implements courseInterface {
       const checkTheTeacherId = await teacherDB.findById(teacherId);
       if (!checkTheTeacherId)
         return { statusCode: 400, data: "Teacher doesn't appear" };
-      await courseDB.create({
+      const newCourse = await courseDB.create({
         courseName: courseName,
         teacherId: teacherId,
       });
+      await teacherDB.findByIdAndUpdate(`${teacherId}`, {
+        $push: { courses: newCourse._id.toString() },
+      });
       return { statusCode: 201, data: "Course created" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal Server Error" };
+    }
+  }
+  static async deleteACourse(courseId: string) {
+    try {
+      const course = await courseDB.findById(`${courseId}`);
+      if (!course) return { statusCode: 204, data: "there is no course" };
+      const teacher = await teacherDB.findById(`${course.teacherId}`);
+      if (!teacher) return { statusCode: 400, data: "Your are not a teacher" };
+      if (!teacher.courses.includes(course._id.toString()))
+        return { statusCode: 400, data: "This is not your course" };
+      await courseDB.deleteOne({ _id: course._id });
+      return { statusCode: 200, data: `${course.courseName} is deleted` };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal Server Error" };

@@ -4,9 +4,10 @@ import Teacher from "../models/teacherModel.js";
 async function getAllTeachers(req: Request, res: Response) {
   try {
     const response = await Teacher.getAllTeachers();
-    res.status(response.statusCode).json({ message: response.data });
+    res.status(response.statusCode).json({ data: response.data });
   } catch (err) {
     console.log(err);
+    res.status(500).json({ data: "Inter server error" });
   }
 }
 async function addNewTeacher(req: Request, res: Response) {
@@ -27,9 +28,10 @@ async function addNewTeacher(req: Request, res: Response) {
       students ? students : []
     );
     const response = await teacher.saveTeacher();
-    res.status(response.statusCode).json(response.data);
+    res.status(response.statusCode).json({ data: response.data });
   } catch (err) {
     console.log(err);
+    res.status(500).json({ data: "Inter server error" });
   }
 }
 export default { getAllTeachers, addNewTeacher };
