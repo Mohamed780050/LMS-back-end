@@ -11,7 +11,9 @@ import student from "./Routes/studentRoute.js";
 import course from "./Routes/courseRoute.js";
 import refreshToken from "./Routes/refreshRoute.js";
 import logout from "./Routes/logoutRoute.js";
-import courses from "./Routes/coursesRoute.js"
+import courses from "./Routes/coursesRoute.js";
+import cors from "cors";
+import { CorsOptions } from "./utils/Cors.js";
 
 dotenv.config();
 
@@ -19,6 +21,7 @@ const app = express();
 const port = process.env.PORT;
 
 // Middlewares
+app.use(cors(CorsOptions));
 // we use this middleware because the res.body() is going to be undefined that middleware allow express to read the body that is send with the post, put and patch requests.
 app.use(express.urlencoded({ extended: true }));
 // to make sure express will understand the incoming request as JSON
