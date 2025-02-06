@@ -1,5 +1,6 @@
 import express from "express";
-import JWTverifyMW from "../middlewares/JWTverifyMW";
+import JWTverifyMW from "../middlewares/JWTverifyMW.js";
+import coursesController from "../controller/coursesControl.js";
 const router = express.Router();
-router.route("/")
-export default router
+router.route("/:teacherId").get(JWTverifyMW, coursesController.getTeacherCourses);
+export default router;

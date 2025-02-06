@@ -5,6 +5,7 @@
   "scripts": {
     "start": "set NODE_ENV=production && node .",
     "dev": "set NODE_ENV=development && nodemon .",
+    "devN":"set NODE_ENV=development && node --watch-path=./dist --watch-preserve-output --env-file=.env .",
     "build": "tsc -w"
   },
   "keywords": [],
