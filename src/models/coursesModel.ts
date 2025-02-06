@@ -21,4 +21,13 @@ export default class Courses {
       return { statusCode: 500, data: "Internal server error" };
     }
   }
+  static async getAllCourses() {
+    try {
+      const courses = await courseDB.find({});
+      return { statusCode: 200, data: courses };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal server error" };
+    }
+  }
 }
