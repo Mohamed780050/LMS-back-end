@@ -17,7 +17,6 @@ async function getTeacherCourses(req: Request, res: Response) {
 }
 async function getAllCourses(req: Request, res: Response) {
   try {
-
     const response = await Courses.getAllCourses();
     res.status(response.statusCode).json(response.data);
   } catch (err) {

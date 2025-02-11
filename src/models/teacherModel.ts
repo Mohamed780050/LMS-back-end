@@ -36,7 +36,9 @@ export default class Teacher implements Omit<teacherInterface, "refreshToken"> {
   }
   async saveTeacher() {
     try {
-      const checkTheTeacher = await teacherDB.findOne({ email: this.email });
+      const checkTheTeacher = await teacherDB.findOne({
+        $or: [{ email: this.email }, { userName: this.userName }],
+      });
       if (checkTheTeacher) {
         return { statusCode: 400, data: "The email is already taken" };
       }

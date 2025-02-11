@@ -16,11 +16,11 @@ async function getACourse(req: Request, res: Response) {
 }
 async function addANewCourse(req: Request, res: Response) {
   try {
-    const { courseName, teacherId } = req.body;
+    const [courseName, teacherId] = [req.body.courseName, req.params.userId];
     if (!courseName || !teacherId) {
       res.status(400).json({ data: "course name and teacher id are required" });
     }
-    const course = new Course(courseName,teacherId);
+    const course = new Course(courseName, teacherId);
     const response = await course.createACourse();
     res.status(response.statusCode).json({ data: response.data });
   } catch (err) {

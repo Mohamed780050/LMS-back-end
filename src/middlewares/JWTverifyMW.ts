@@ -13,11 +13,16 @@ export default function JWTverifyMW(
     return;
   }
   const token = authHeader.split(" ")[1];
-  jwt.verify(token, `${process.env.ACCESS_TOKEN_SECRET}`, (err, payload) => {
-    if (err) {
-      res.sendStatus(403);
-      return;
+  jwt.verify(
+    token,
+    `${process.env.ACCESS_TOKEN_SECRET}`,
+    (err, payload: any) => {
+      if (err) {
+        res.sendStatus(403);
+        return null;
+      }
+      req.params = { userId: payload.userId };
+      nxt();
     }
-    nxt();
-  });
+  );
 }

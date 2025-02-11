@@ -12,6 +12,7 @@ async function useRefreshTokenForTeacher(req: Request, res: Response) {
     res.status(response.status).json(response.data);
   } catch (err) {
     console.log(err);
+    res.status(500).json({data:"Internal server error"})
   }
 }
 async function useRefreshTokenForStudent(req: Request, res: Response) {
@@ -26,6 +27,7 @@ async function useRefreshTokenForStudent(req: Request, res: Response) {
     res.status(response.status).json(response.data);
   } catch (err) {
     console.log(err);
+    res.status(500).json({data:"Internal server error"})
   }
 }
 export default { useRefreshTokenForStudent, useRefreshTokenForTeacher };
