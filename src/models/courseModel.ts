@@ -13,7 +13,7 @@ class Course implements CourseType {
   static async getACourse(courseId: string) {
     try {
       const course = await courseDB.findById(`${courseId}`);
-      if (!course) return { statusCode: 204, data: "there is no course" };
+      if (!course) return { statusCode: 404, data: "there is no course" };
       return { statusCode: 200, data: course };
     } catch (err) {
       console.log(err);
@@ -42,7 +42,7 @@ class Course implements CourseType {
       await teacherDB.findByIdAndUpdate(`${this.teacherId}`, {
         $push: { courses: newCourse._id.toString() },
       });
-      return { statusCode: 201, data: "Course created" };
+      return { statusCode: 201, data: newCourse._id.toString() };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal Server Error" };

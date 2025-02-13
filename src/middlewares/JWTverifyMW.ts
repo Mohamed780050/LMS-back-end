@@ -21,7 +21,7 @@ export default function JWTverifyMW(
         res.sendStatus(403);
         return null;
       }
-      req.params = { userId: payload.userId };
+      req.params = { ...req.params, userId: payload.userId };
       nxt();
     }
   );

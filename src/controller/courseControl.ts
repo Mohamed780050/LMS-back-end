@@ -8,7 +8,7 @@ async function getACourse(req: Request, res: Response) {
       return;
     }
     const response = await Course.getACourse(id);
-    res.status(response.statusCode).json({ data: response.data });
+    res.status(response.statusCode).json({ course: response.data });
   } catch (err) {
     console.log(err);
     res.status(500).json({ data: "Internal server Error" });
@@ -22,7 +22,7 @@ async function addANewCourse(req: Request, res: Response) {
     }
     const course = new Course(courseName, teacherId);
     const response = await course.createACourse();
-    res.status(response.statusCode).json({ data: response.data });
+    res.status(response.statusCode).json({ id: response.data });
   } catch (err) {
     console.log(err);
     res.status(500).json({ data: "Internal server Error" });
