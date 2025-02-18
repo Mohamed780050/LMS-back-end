@@ -7,14 +7,28 @@ export default class Courses {
   constructor(teacherId: string) {
     this.teacherId = teacherId;
   }
-  async getTeacherCourses() {
+  async getTeacherCourses(query?: string) {
     try {
       const isObjectId = mongoose.Types.ObjectId.isValid(this.teacherId);
       if (!isObjectId)
         return { statusCode: 400, data: "Teacher ID is not valid" };
       const findTeacher = await teacherDB.findById(this.teacherId);
       if (!findTeacher) return { statusCode: 404, data: "Teacher Not found" };
-      const teacherCourses = await courseDB.find({ teacherId: this.teacherId });
+      console.log(query);
+      const teacherCourses = await courseDB.find(
+        {
+          teacherId: this.teacherId,
+          courseName: { $regex: `${query ? query : ""}`, $options: "i" },
+        },
+        {
+          courseName: 1,
+          category: 1,
+          price: 1,
+          isPublished: 1,
+          rating: 1,
+          studentsNumber: { $size: "$students" },
+        }
+      );
       return { statusCode: 200, data: teacherCourses };
     } catch (err) {
       console.log(err);
