@@ -3,14 +3,25 @@ import Courses from "../models/coursesModel.js";
 async function getTeacherCourses(req: Request, res: Response) {
   try {
     const { userId } = req.params;
-    const { search } = req.query;
-    console.log(search);
+    const { search, page } = req.query;
     if (!userId) {
       res.status(400).json({ data: "Teacher ID is required" });
       return;
     }
+    if (typeof page !== "string") {
+      res
+        .status(400)
+        .json({ data: "Page must be a string that contain a number" });
+      return;
+    }
+    console.log(page)
+    console.log(parseInt(page))
+    if (isNaN(parseInt(page))) {
+      res.status(400).json({ data: "Page must be an int number" });
+      return;
+    }
     const teacherCourses = new Courses(userId);
-    const response = await teacherCourses.getTeacherCourses(`${search}`);
+    const response = await teacherCourses.getTeacherCourses(page, `${search}`);
     res.status(response.statusCode).json(response.data);
   } catch (err) {
     console.log(err);
@@ -26,4 +37,18 @@ async function getAllCourses(req: Request, res: Response) {
     res.status(500);
   }
 }
-export default { getTeacherCourses, getAllCourses };
+async function getCoursesNumber(req: Request, res: Response) {
+  try {
+    const { userId } = req.params;
+    if (!userId) {
+      res.status(400).json({ data: "Teacher ID is required" });
+      return;
+    }
+    const teacherCourses = new Courses(userId);
+    const response = await teacherCourses.getCoursesNumber();
+    res.status(response.statusCode).json(response.data);
+  } catch (err) {
+    console.log(err);
+  }
+}
+export default { getTeacherCourses, getAllCourses, getCoursesNumber };

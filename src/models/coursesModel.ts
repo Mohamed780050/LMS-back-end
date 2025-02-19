@@ -7,28 +7,30 @@ export default class Courses {
   constructor(teacherId: string) {
     this.teacherId = teacherId;
   }
-  async getTeacherCourses(query?: string) {
+  async getTeacherCourses(page: string, query?: string) {
     try {
       const isObjectId = mongoose.Types.ObjectId.isValid(this.teacherId);
       if (!isObjectId)
         return { statusCode: 400, data: "Teacher ID is not valid" };
       const findTeacher = await teacherDB.findById(this.teacherId);
       if (!findTeacher) return { statusCode: 404, data: "Teacher Not found" };
-      console.log(query);
-      const teacherCourses = await courseDB.find(
-        {
-          teacherId: this.teacherId,
-          courseName: { $regex: `${query ? query : ""}`, $options: "i" },
-        },
-        {
-          courseName: 1,
-          category: 1,
-          price: 1,
-          isPublished: 1,
-          rating: 1,
-          studentsNumber: { $size: "$students" },
-        }
-      );
+      const teacherCourses = await courseDB
+        .find(
+          {
+            teacherId: this.teacherId,
+            courseName: { $regex: `${query ? query : ""}`, $options: "i" },
+          },
+          {
+            courseName: 1,
+            category: 1,
+            price: 1,
+            isPublished: 1,
+            rating: 1,
+            studentsNumber: { $size: "$students" },
+          }
+        )
+        .skip((parseInt(page) - 1) * 10)
+        .limit(10);
       return { statusCode: 200, data: teacherCourses };
     } catch (err) {
       console.log(err);
@@ -39,6 +41,23 @@ export default class Courses {
     try {
       const courses = await courseDB.find({});
       return { statusCode: 200, data: courses };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal server error" };
+    }
+  }
+  async getCoursesNumber() {
+    try {
+      const isObjectId = mongoose.Types.ObjectId.isValid(this.teacherId);
+      if (!isObjectId)
+        return { statusCode: 400, data: "Teacher ID is not valid" };
+      const findTeacher = await teacherDB.findById(this.teacherId);
+      if (!findTeacher) return { statusCode: 404, data: "Teacher Not found" };
+      const teacherCourses = await courseDB.countDocuments({
+        teacherId: this.teacherId,
+      });
+      console.log(teacherCourses);
+      return { statusCode: 200, data: teacherCourses };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal server error" };
