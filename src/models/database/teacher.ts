@@ -33,6 +33,17 @@ const teacherSchema = new Schema<teacherInterface>(
       type: String,
       default: "",
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    resetPasswordToken: {
+      type: String,
+      default: "",
+    },
+    resetPasswordTokenExpire: {
+      type: Date,
+    },
   },
   { versionKey: false }
 );

@@ -49,6 +49,10 @@ const studentSchema = new Schema<studentInterface>(
       type: String,
       default: "",
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { versionKey: false }
 );

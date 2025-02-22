@@ -1,7 +1,9 @@
 import Ajv, { JSONSchemaType } from "ajv";
 import { teacherInterface } from "../interfaces/interfaces";
 
-const Schema: JSONSchemaType<teacherInterface> = {
+const Schema: JSONSchemaType<
+  Omit<teacherInterface, "resetPasswordToken" | "resetPasswordTokenExpire">
+> = {
   type: "object",
   properties: {
     userName: {
@@ -33,6 +35,10 @@ const Schema: JSONSchemaType<teacherInterface> = {
     refreshToken: {
       type: "string",
       default: "",
+    },
+    isVerified: {
+      type: "boolean",
+      default: false,
     },
   },
   required: ["userName", "email", "password"],

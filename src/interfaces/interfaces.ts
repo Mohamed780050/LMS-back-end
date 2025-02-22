@@ -19,6 +19,9 @@ export interface teacherInterface {
   refreshToken: string;
   courses: string[];
   students: string[];
+  isVerified: boolean;
+  resetPasswordToken: string;
+  resetPasswordTokenExpire: Date;
 }
 export interface authInterface {
   identifier: string;
@@ -35,6 +38,9 @@ export interface studentInterface {
     done: boolean;
     chapters: { chapterId: string; done: boolean }[];
   }[];
+  isVerified: boolean;
+  resetPasswordToken: string;
+  resetPasswordTokenExpire: Date;
 }
 export interface courseInterface {
   courseName: string;

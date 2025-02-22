@@ -1,7 +1,9 @@
 import { teacherInterface } from "../interfaces/interfaces";
 import teacherDB from "./database/teacher.js";
 import bcrypt from "bcrypt";
-export default class Teacher implements Omit<teacherInterface, "refreshToken"> {
+export default class Teacher
+  implements Omit<teacherInterface, "refreshToken" | "isVerified"|"resetPasswordToken"|"resetPasswordTokenExpire">
+{
   password: string;
   userName: string;
   email: string;
