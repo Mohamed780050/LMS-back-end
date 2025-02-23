@@ -9,6 +9,8 @@ class Student
       | "isVerified"
       | "resetPasswordToken"
       | "resetPasswordTokenExpire"
+      | "verificationCode"
+      | "verificationCodeExpire"
     >
 {
   userName: string;

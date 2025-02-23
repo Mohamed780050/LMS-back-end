@@ -22,6 +22,8 @@ export interface teacherInterface {
   isVerified: boolean;
   resetPasswordToken: string;
   resetPasswordTokenExpire: Date;
+  verificationCode:string;
+  verificationCodeExpire:Date
 }
 export interface authInterface {
   identifier: string;
@@ -41,6 +43,8 @@ export interface studentInterface {
   isVerified: boolean;
   resetPasswordToken: string;
   resetPasswordTokenExpire: Date;
+  verificationCode:string;
+  verificationCodeExpire:Date
 }
 export interface courseInterface {
   courseName: string;

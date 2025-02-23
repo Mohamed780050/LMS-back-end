@@ -8,6 +8,8 @@ const Schema: JSONSchemaType<
     | "isVerified"
     | "resetPasswordToken"
     | "resetPasswordTokenExpire"
+    | "verificationCode"
+    | "verificationCodeExpire"
   >
 > = {
   type: "object",

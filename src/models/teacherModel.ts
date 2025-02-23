@@ -1,8 +1,18 @@
 import { teacherInterface } from "../interfaces/interfaces";
+import generateVerificationCode from "../utils/generateVerificationCode";
 import teacherDB from "./database/teacher.js";
 import bcrypt from "bcrypt";
 export default class Teacher
-  implements Omit<teacherInterface, "refreshToken" | "isVerified"|"resetPasswordToken"|"resetPasswordTokenExpire">
+  implements
+    Omit<
+      teacherInterface,
+      | "refreshToken"
+      | "isVerified"
+      | "resetPasswordToken"
+      | "resetPasswordTokenExpire"
+      | "verificationCode"
+      | "verificationCodeExpire"
+    >
 {
   password: string;
   userName: string;
@@ -45,6 +55,7 @@ export default class Teacher
         return { statusCode: 400, data: "The email is already taken" };
       }
       const hashedPassword = await bcrypt.hash(this.password, 10);
+      const verificationCode = generateVerificationCode();
       await teacherDB.create({
         userName: this.userName,
         email: this.email,
@@ -52,6 +63,8 @@ export default class Teacher
         avatar: this.avatar,
         courses: this.courses,
         students: this.students,
+        verificationCode,
+        verificationCodeExpire: Date.now() + 2 * 60 * 60 * 1000,
       });
       return { statusCode: 201, data: "Teacher created" };
     } catch (err) {

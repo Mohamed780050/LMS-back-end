@@ -2,7 +2,13 @@ import Ajv, { JSONSchemaType } from "ajv";
 import { teacherInterface } from "../interfaces/interfaces";
 
 const Schema: JSONSchemaType<
-  Omit<teacherInterface, "resetPasswordToken" | "resetPasswordTokenExpire">
+  Omit<
+    teacherInterface,
+    | "resetPasswordToken"
+    | "resetPasswordTokenExpire"
+    | "verificationCode"
+    | "verificationCodeExpire"
+  >
 > = {
   type: "object",
   properties: {
