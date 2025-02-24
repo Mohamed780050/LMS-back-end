@@ -1,7 +1,7 @@
 import courseDB from "./database/course.js";
 // import { courseInterface } from "../interfaces/interfaces";
 import teacherDB from "./database/teacher.js";
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 type CourseType = { courseName: string; teacherId: string };
 class Course implements CourseType {
   courseName: string;
@@ -58,6 +58,39 @@ class Course implements CourseType {
         return { statusCode: 400, data: "This is not your course" };
       await courseDB.deleteOne({ _id: course._id });
       return { statusCode: 200, data: `${course.courseName} is deleted` };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal Server Error" };
+    }
+  }
+  static async updateName(
+    courseId: string,
+    teacherId: string,
+    courseName: string
+  ) {
+    try {
+      const [checkTeacherId, checkCourseId] = [
+        mongoose.Types.ObjectId.isValid(teacherId),
+        mongoose.Types.ObjectId.isValid(courseId),
+      ];
+      if (!checkCourseId || !checkTeacherId)
+        return { statusCode: 400, data: "Not a Valid id" };
+      const [findTeacher, findCourse] = [
+        await teacherDB.findById(teacherId, { _id: 1 }).lean(),
+        await courseDB.findById(courseId, { teacherId: 1 }).lean(),
+      ];
+      if (!findTeacher) return { statusCode: 404, data: "teacher Not found" };
+      if (!findCourse) return { statusCode: 404, data: "course Not found" };
+      // checking if the teacher owns the course
+      if (findTeacher._id.toString() !== findCourse.teacherId)
+        return { statusCode: 404, data: "Not your course" };
+      const checkOnCourseName = await courseDB.find({ courseName: courseName });
+      if (checkOnCourseName.length)
+        return { statusCode: 400, data: "Chose another course name" };
+      await courseDB.findByIdAndUpdate(courseId, {
+        $set: { courseName: courseName },
+      });
+      return { statusCode: 200, data: "course name updated" };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal Server Error" };

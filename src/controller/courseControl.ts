@@ -42,4 +42,22 @@ async function deleteACourse(req: Request, res: Response) {
     res.status(500).json({ data: "Internal server error" });
   }
 }
-export default { getACourse, addANewCourse, deleteACourse };
+async function updateCourseName(req: Request, res: Response) {
+  try {
+    const [courseName, teacherId, courseId] = [
+      req.body.courseName,
+      req.params.userId,
+      req.params.id,
+    ];
+    console.log(courseName);
+    if (!courseName || !teacherId || !courseId) {
+      res.status(400).json({ data: "course name and teacher id are required" });
+    }
+    const response = await Course.updateName(courseId, teacherId, courseName);
+    res.status(response.statusCode).json(response.data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "Internal server Error" });
+  }
+}
+export default { getACourse, addANewCourse, deleteACourse, updateCourseName };

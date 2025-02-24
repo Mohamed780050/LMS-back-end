@@ -1,5 +1,5 @@
 import { teacherInterface } from "../interfaces/interfaces";
-import generateVerificationCode from "../utils/generateVerificationCode";
+import generateVerificationCode from "../utils/generateVerificationCode.js";
 import teacherDB from "./database/teacher.js";
 import bcrypt from "bcrypt";
 export default class Teacher
