@@ -1,4 +1,5 @@
 import { teacherInterface } from "../interfaces/interfaces";
+import { sendVerificationEmail } from "../utils/emails/email.js";
 import generateVerificationCode from "../utils/generateVerificationCode.js";
 import teacherDB from "./database/teacher.js";
 import bcrypt from "bcrypt";
@@ -52,11 +53,11 @@ export default class Teacher
         $or: [{ email: this.email }, { userName: this.userName }],
       });
       if (checkTheTeacher) {
-        return { statusCode: 400, data: "The email is already taken" };
+        return { statusCode: 400, data: "The email or username is already taken" };
       }
       const hashedPassword = await bcrypt.hash(this.password, 10);
       const verificationCode = generateVerificationCode();
-      await teacherDB.create({
+      const teacher = await teacherDB.create({
         userName: this.userName,
         email: this.email,
         password: hashedPassword,
@@ -66,6 +67,7 @@ export default class Teacher
         verificationCode,
         verificationCodeExpire: Date.now() + 2 * 60 * 60 * 1000,
       });
+      await sendVerificationEmail(teacher.email,verificationCode)
       return { statusCode: 201, data: "Teacher created" };
     } catch (err) {
       console.log(err);

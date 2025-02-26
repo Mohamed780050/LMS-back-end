@@ -49,7 +49,6 @@ async function updateCourseName(req: Request, res: Response) {
       req.params.userId,
       req.params.id,
     ];
-    console.log(courseName);
     if (!courseName || !teacherId || !courseId) {
       res.status(400).json({ data: "course name and teacher id are required" });
     }
