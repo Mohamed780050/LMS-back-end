@@ -9,7 +9,13 @@ router
     "/edit/:id/courseDescription",
     JWTverifyMW,
     courseControl.updateCourseDescription
-  );
+  )
+  .post(
+    "/edit/:id/courseCategory",
+    JWTverifyMW,
+    courseControl.updateCourseCategory
+  )
+  .post("/edit/:id/coursePrice", JWTverifyMW, courseControl.updateCoursePrice);
 router
   .route("/:id")
   .get(JWTverifyMW, courseControl.getACourse)

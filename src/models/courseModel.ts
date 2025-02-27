@@ -126,6 +126,66 @@ class Course implements CourseType {
       return { statusCode: 500, data: "Internal Server Error" };
     }
   }
+  static async updateCategory(
+    courseId: string,
+    teacherId: string,
+    courseCategory: string
+  ) {
+    try {
+      const [checkTeacherId, checkCourseId] = [
+        mongoose.Types.ObjectId.isValid(teacherId),
+        mongoose.Types.ObjectId.isValid(courseId),
+      ];
+      if (!checkCourseId || !checkTeacherId)
+        return { statusCode: 400, data: "Not a Valid id" };
+      const [findTeacher, findCourse] = [
+        await teacherDB.findById(teacherId, { _id: 1 }).lean(),
+        await courseDB.findById(courseId, { teacherId: 1 }).lean(),
+      ];
+      if (!findTeacher) return { statusCode: 404, data: "teacher Not found" };
+      if (!findCourse) return { statusCode: 404, data: "course Not found" };
+      // checking if the teacher owns the course
+      if (findTeacher._id.toString() !== findCourse.teacherId)
+        return { statusCode: 404, data: "Not your course" };
+      await courseDB.findByIdAndUpdate(courseId, {
+        $set: { category: courseCategory },
+      });
+      return { statusCode: 200, data: "course name updated" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal Server Error" };
+    }
+  }
+  static async updatePrice(
+    courseId: string,
+    teacherId: string,
+    coursePrice: number
+  ) {
+    try {
+      const [checkTeacherId, checkCourseId] = [
+        mongoose.Types.ObjectId.isValid(teacherId),
+        mongoose.Types.ObjectId.isValid(courseId),
+      ];
+      if (!checkCourseId || !checkTeacherId)
+        return { statusCode: 400, data: "Not a Valid id" };
+      const [findTeacher, findCourse] = [
+        await teacherDB.findById(teacherId, { _id: 1 }).lean(),
+        await courseDB.findById(courseId, { teacherId: 1 }).lean(),
+      ];
+      if (!findTeacher) return { statusCode: 404, data: "teacher Not found" };
+      if (!findCourse) return { statusCode: 404, data: "course Not found" };
+      // checking if the teacher owns the course
+      if (findTeacher._id.toString() !== findCourse.teacherId)
+        return { statusCode: 404, data: "Not your course" };
+      await courseDB.findByIdAndUpdate(courseId, {
+        $set: { price: coursePrice },
+      });
+      return { statusCode: 200, data: "course name updated" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal Server Error" };
+    }
+  }
 }
 
 export default Course;

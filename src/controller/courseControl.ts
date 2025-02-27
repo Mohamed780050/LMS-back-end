@@ -82,10 +82,57 @@ async function updateCourseDescription(req: Request, res: Response) {
     res.status(500).json({ data: "Internal server Error" });
   }
 }
+async function updateCourseCategory(req: Request, res: Response) {
+  try {
+    const [courseCategory, teacherId, courseId] = [
+      req.body.courseCategory,
+      req.params.userId,
+      req.params.id,
+    ];
+    if (!courseCategory || !teacherId || !courseId) {
+      res
+        .status(400)
+        .json({ data: "course description and teacher id are required" });
+    }
+    const response = await Course.updateCategory(
+      courseId,
+      teacherId,
+      courseCategory
+    );
+    res.status(response.statusCode).json(response.data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "Internal server Error" });
+  }
+}
+async function updateCoursePrice(req: Request, res: Response) {
+  try {
+    const [coursePrice, teacherId, courseId] = [
+      req.body.coursePrice,
+      req.params.userId,
+      req.params.id,
+    ];
+    console.log(coursePrice);
+    if (!coursePrice || !teacherId || !courseId) {
+      res
+        .status(400)
+        .json({ data: "course description and teacher id are required" });
+    }
+    const number = parseInt(`${coursePrice}`);
+    if (isNaN(number)) res.status(400).json({ date: "number is required" });
+    const response = await Course.updatePrice(courseId, teacherId, coursePrice);
+    res.status(response.statusCode).json(response.data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "Internal server Error" });
+  }
+}
 export default {
   getACourse,
   addANewCourse,
   deleteACourse,
   updateCourseName,
   updateCourseDescription,
+  updateCourseCategory,
+  updateCoursePrice,
 };
