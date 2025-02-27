@@ -48,7 +48,7 @@ class Course implements CourseType {
       return { statusCode: 500, data: "Internal Server Error" };
     }
   }
-  static async deleteACourse(courseId: string) {
+  static async deleteACourse(courseId: string, teacherId: string) {
     try {
       const course = await courseDB.findById(`${courseId}`);
       if (!course) return { statusCode: 204, data: "there is no course" };
@@ -110,16 +110,29 @@ class Course implements CourseType {
         return { statusCode: 400, data: "Not a Valid id" };
       const [findTeacher, findCourse] = [
         await teacherDB.findById(teacherId, { _id: 1 }).lean(),
-        await courseDB.findById(courseId, { teacherId: 1 }).lean(),
+        await courseDB
+          .findById(courseId, { teacherId: 1, completed: 1, description: 1 })
+          .lean(),
       ];
       if (!findTeacher) return { statusCode: 404, data: "teacher Not found" };
       if (!findCourse) return { statusCode: 404, data: "course Not found" };
       // checking if the teacher owns the course
       if (findTeacher._id.toString() !== findCourse.teacherId)
         return { statusCode: 404, data: "Not your course" };
-      await courseDB.findByIdAndUpdate(courseId, {
-        $set: { description: courseDescription },
-      });
+      console.log(findCourse.completed);
+      if (findCourse.description === "")
+        await courseDB.findByIdAndUpdate(courseId, {
+          $set: {
+            description: courseDescription,
+            completed: findCourse.completed + 1,
+          },
+        });
+      else
+        await courseDB.findByIdAndUpdate(courseId, {
+          $set: {
+            description: courseDescription,
+          },
+        });
       return { statusCode: 200, data: "course name updated" };
     } catch (err) {
       console.log(err);
@@ -140,16 +153,28 @@ class Course implements CourseType {
         return { statusCode: 400, data: "Not a Valid id" };
       const [findTeacher, findCourse] = [
         await teacherDB.findById(teacherId, { _id: 1 }).lean(),
-        await courseDB.findById(courseId, { teacherId: 1 }).lean(),
+        await courseDB
+          .findById(courseId, { teacherId: 1, category: 1, completed: 1 })
+          .lean(),
       ];
       if (!findTeacher) return { statusCode: 404, data: "teacher Not found" };
       if (!findCourse) return { statusCode: 404, data: "course Not found" };
       // checking if the teacher owns the course
       if (findTeacher._id.toString() !== findCourse.teacherId)
         return { statusCode: 404, data: "Not your course" };
-      await courseDB.findByIdAndUpdate(courseId, {
-        $set: { category: courseCategory },
-      });
+      if (findCourse.category === "")
+        await courseDB.findByIdAndUpdate(courseId, {
+          $set: {
+            category: courseCategory,
+            completed: findCourse.completed + 1,
+          },
+        });
+      else
+        await courseDB.findByIdAndUpdate(courseId, {
+          $set: {
+            category: courseCategory,
+          },
+        });
       return { statusCode: 200, data: "course name updated" };
     } catch (err) {
       console.log(err);

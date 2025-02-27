@@ -30,12 +30,12 @@ async function addANewCourse(req: Request, res: Response) {
 }
 async function deleteACourse(req: Request, res: Response) {
   try {
-    const { id } = req.params;
-    if (!id) {
+    const { id, userId } = req.params;
+    if (!id || !userId) {
       res.status(400).json({ data: "id is required" });
       return;
     }
-    const response = await Course.deleteACourse(id);
+    const response = await Course.deleteACourse(id, userId);
     res.status(response.statusCode).json({ data: response.data });
   } catch (err) {
     console.log(err);
