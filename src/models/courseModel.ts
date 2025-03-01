@@ -1,3 +1,4 @@
+import validateIds from "../utils/validateMongoId.js";
 import courseDB from "./database/course.js";
 // import { courseInterface } from "../interfaces/interfaces";
 import teacherDB from "./database/teacher.js";
@@ -12,7 +13,9 @@ class Course implements CourseType {
   }
   static async getACourse(courseId: string) {
     try {
-      const course = await courseDB.findById(`${courseId}`);
+      const validId = validateIds([courseId]);
+      if (!validId) return { statusCode: 400, data: "In valid id" };
+      const course = await courseDB.findById(`${courseId}`).lean();
       if (!course) return { statusCode: 404, data: "there is no course" };
       return { statusCode: 200, data: course };
     } catch (err) {
@@ -21,11 +24,18 @@ class Course implements CourseType {
     }
   }
   async createACourse() {
+    //    TODO: Orphaned Course Creation
+    // In createACourse, if the teacher update fails after creating the course, the course remains orphaned.
+    // Fix: Add manual rollback logic:
     try {
       // check if the course exists
-      const checkCourseName = await courseDB.find({
-        courseName: this.courseName,
-      });
+      const validId = validateIds([this.teacherId]);
+      if (!validId) return { statusCode: 400, data: "In valid id" };
+      const checkCourseName = await courseDB
+        .find({
+          courseName: this.courseName,
+        })
+        .lean();
       if (checkCourseName.length)
         return { statusCode: 400, data: "Use another course name" };
       // check if the id is valid
@@ -50,13 +60,23 @@ class Course implements CourseType {
   }
   static async deleteACourse(courseId: string, teacherId: string) {
     try {
-      const course = await courseDB.findById(`${courseId}`);
-      if (!course) return { statusCode: 204, data: "there is no course" };
-      const teacher = await teacherDB.findById(`${course.teacherId}`);
+      const validId = validateIds([courseId, teacherId]);
+      if (!validId) return { statusCode: 400, data: "In valid id" };
+      const course = await courseDB
+        .findById(`${courseId}`, {
+          _id: 1,
+          teacherId: 1,
+        })
+        .lean();
+      if (!course) return { statusCode: 404, data: "there is no course" };
+      const teacher = await teacherDB.findById(`${teacherId}`).lean();
       if (!teacher) return { statusCode: 400, data: "Your are not a teacher" };
-      if (!teacher.courses.includes(course._id.toString()))
-        return { statusCode: 400, data: "This is not your course" };
+      if (course.teacherId !== teacher._id.toString())
+        return { statusCode: 403, data: "This is not your course" };
       await courseDB.deleteOne({ _id: course._id });
+      await teacherDB.findByIdAndUpdate(teacherId, {
+        $pull: { courses: courseId },
+      });
       return { statusCode: 200, data: `${course.courseName} is deleted` };
     } catch (err) {
       console.log(err);
@@ -69,12 +89,8 @@ class Course implements CourseType {
     courseName: string
   ) {
     try {
-      const [checkTeacherId, checkCourseId] = [
-        mongoose.Types.ObjectId.isValid(teacherId),
-        mongoose.Types.ObjectId.isValid(courseId),
-      ];
-      if (!checkCourseId || !checkTeacherId)
-        return { statusCode: 400, data: "Not a Valid id" };
+      const validId = validateIds([courseId, teacherId]);
+      if (!validId) return { statusCode: 400, data: "In valid id" };
       const [findTeacher, findCourse] = [
         await teacherDB.findById(teacherId, { _id: 1 }).lean(),
         await courseDB.findById(courseId, { teacherId: 1 }).lean(),
@@ -83,7 +99,7 @@ class Course implements CourseType {
       if (!findCourse) return { statusCode: 404, data: "course Not found" };
       // checking if the teacher owns the course
       if (findTeacher._id.toString() !== findCourse.teacherId)
-        return { statusCode: 404, data: "Not your course" };
+        return { statusCode: 403, data: "Not your course" };
       const checkOnCourseName = await courseDB.find({ courseName: courseName });
       if (checkOnCourseName.length)
         return { statusCode: 400, data: "Chose another course name" };
@@ -102,12 +118,8 @@ class Course implements CourseType {
     courseDescription: string
   ) {
     try {
-      const [checkTeacherId, checkCourseId] = [
-        mongoose.Types.ObjectId.isValid(teacherId),
-        mongoose.Types.ObjectId.isValid(courseId),
-      ];
-      if (!checkCourseId || !checkTeacherId)
-        return { statusCode: 400, data: "Not a Valid id" };
+      const validId = validateIds([courseId, teacherId]);
+      if (!validId) return { statusCode: 400, data: "In valid id" };
       const [findTeacher, findCourse] = [
         await teacherDB.findById(teacherId, { _id: 1 }).lean(),
         await courseDB
@@ -118,7 +130,7 @@ class Course implements CourseType {
       if (!findCourse) return { statusCode: 404, data: "course Not found" };
       // checking if the teacher owns the course
       if (findTeacher._id.toString() !== findCourse.teacherId)
-        return { statusCode: 404, data: "Not your course" };
+        return { statusCode: 403, data: "Not your course" };
       console.log(findCourse.completed);
       if (findCourse.description === "")
         await courseDB.findByIdAndUpdate(courseId, {
@@ -133,7 +145,7 @@ class Course implements CourseType {
             description: courseDescription,
           },
         });
-      return { statusCode: 200, data: "course name updated" };
+      return { statusCode: 200, data: "course Description updated" };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal Server Error" };
@@ -145,12 +157,8 @@ class Course implements CourseType {
     courseCategory: string
   ) {
     try {
-      const [checkTeacherId, checkCourseId] = [
-        mongoose.Types.ObjectId.isValid(teacherId),
-        mongoose.Types.ObjectId.isValid(courseId),
-      ];
-      if (!checkCourseId || !checkTeacherId)
-        return { statusCode: 400, data: "Not a Valid id" };
+      const validId = validateIds([courseId, teacherId]);
+      if (!validId) return { statusCode: 400, data: "In valid id" };
       const [findTeacher, findCourse] = [
         await teacherDB.findById(teacherId, { _id: 1 }).lean(),
         await courseDB
@@ -161,7 +169,7 @@ class Course implements CourseType {
       if (!findCourse) return { statusCode: 404, data: "course Not found" };
       // checking if the teacher owns the course
       if (findTeacher._id.toString() !== findCourse.teacherId)
-        return { statusCode: 404, data: "Not your course" };
+        return { statusCode: 403, data: "Not your course" };
       if (findCourse.category === "")
         await courseDB.findByIdAndUpdate(courseId, {
           $set: {
@@ -187,12 +195,10 @@ class Course implements CourseType {
     coursePrice: number
   ) {
     try {
-      const [checkTeacherId, checkCourseId] = [
-        mongoose.Types.ObjectId.isValid(teacherId),
-        mongoose.Types.ObjectId.isValid(courseId),
-      ];
-      if (!checkCourseId || !checkTeacherId)
-        return { statusCode: 400, data: "Not a Valid id" };
+      if (coursePrice < 0)
+        return { statusCode: 400, data: "the number is negative" };
+      const validId = validateIds([courseId, teacherId]);
+      if (!validId) return { statusCode: 400, data: "In valid id" };
       const [findTeacher, findCourse] = [
         await teacherDB.findById(teacherId, { _id: 1 }).lean(),
         await courseDB.findById(courseId, { teacherId: 1 }).lean(),
@@ -201,11 +207,11 @@ class Course implements CourseType {
       if (!findCourse) return { statusCode: 404, data: "course Not found" };
       // checking if the teacher owns the course
       if (findTeacher._id.toString() !== findCourse.teacherId)
-        return { statusCode: 404, data: "Not your course" };
+        return { statusCode: 403, data: "Not your course" };
       await courseDB.findByIdAndUpdate(courseId, {
         $set: { price: coursePrice },
       });
-      return { statusCode: 200, data: "course name updated" };
+      return { statusCode: 200, data: "course price updated" };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal Server Error" };

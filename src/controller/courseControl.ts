@@ -1,5 +1,6 @@
 import Course from "../models/courseModel.js";
 import { Request, Response } from "express";
+
 async function getACourse(req: Request, res: Response) {
   try {
     const { id } = req.params;
@@ -112,7 +113,6 @@ async function updateCoursePrice(req: Request, res: Response) {
       req.params.userId,
       req.params.id,
     ];
-    console.log(coursePrice);
     if (!coursePrice || !teacherId || !courseId) {
       res
         .status(400)
@@ -127,6 +127,7 @@ async function updateCoursePrice(req: Request, res: Response) {
     res.status(500).json({ data: "Internal server Error" });
   }
 }
+
 export default {
   getACourse,
   addANewCourse,
