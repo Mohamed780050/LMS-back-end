@@ -7,6 +7,21 @@ const dataSchema = new Schema({
   normal: "String",
   full: "String",
 });
+const imageSchema = new Schema(
+  {
+    public_id: { type: "String", default: "" },
+    url: { type: "String", default: "" },
+    secure_url: { type: "String", default: "" },
+    width: { type: "Number", default: 0 },
+    height: { type: "Number", default: 0 },
+    format: { type: "String", default: "" },
+    resource_type: { type: "String", default: "" },
+    created_at: { type: "String", default: "" },
+    asset_folder: { type: "String", default: "" },
+    size: { type: "Number", default: 0 },
+  },
+  { _id: false }
+);
 const courseSchema = new Schema<courseInterface>(
   {
     courseName: {
@@ -16,9 +31,8 @@ const courseSchema = new Schema<courseInterface>(
       type: "String",
       default: "",
     },
-    imageURL: {
-      type: "String",
-      default: "",
+    image: {
+      type: imageSchema,
     },
     price: {
       type: "Number",

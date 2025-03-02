@@ -25,7 +25,7 @@ app.use(cors(CorsOptions));
 // we use this middleware because the res.body() is going to be undefined that middleware allow express to read the body that is send with the post, put and patch requests.
 app.use(express.urlencoded({ extended: true }));
 // to make sure express will understand the incoming request as JSON
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 // to make express understand the cookie that is send with the request
 app.use(cookieParser());
 // to secure the app by setting various HTTP headers

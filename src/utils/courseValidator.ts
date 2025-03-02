@@ -8,7 +8,22 @@ const schema: JSONSchemaType<courseInterface> = {
       default: "",
     },
     description: { type: "string", default: "" },
-    imageURL: { type: "string", default: "" },
+    image: {
+      type: "object",
+      properties: {
+        public_id: { type: "string", default: "" },
+        url: { type: "string", default: "" },
+        secure_url: { type: "string", default: "" },
+        width: { type: "number", default: 0 },
+        height: { type: "number", default: 0 },
+        format: { type: "string", default: "" },
+        resource_type: { type: "string", default: "" },
+        created_at: { type: "string", default: "" },
+        asset_folder: { type: "string", default: "" },
+        size: { type: "number", default: 0 },
+      },
+      required: [],
+    },
     price: { type: "number", default: 0 },
     isPublished: { type: "boolean", default: false },
     date: {

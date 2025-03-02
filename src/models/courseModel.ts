@@ -1,4 +1,4 @@
-import { uploadImage } from "../utils/upload/cloudinary.config.js";
+import { deleteImage, uploadImage } from "../utils/upload/cloudinary.config.js";
 import validateIds from "../utils/validateMongoId.js";
 import courseDB from "./database/course.js";
 // import { courseInterface } from "../interfaces/interfaces";
@@ -228,19 +228,41 @@ class Course implements CourseType {
       if (!validId) return { statusCode: 400, data: "In valid id" };
       const [findTeacher, findCourse] = [
         await teacherDB.findById(teacherId, { _id: 1 }).lean(),
-        await courseDB.findById(courseId, { teacherId: 1 }).lean(),
+        await courseDB
+          .findById(courseId, { teacherId: 1, completed: 1, image: 1 })
+          .lean(),
       ];
       if (!findTeacher) return { statusCode: 404, data: "teacher Not found" };
       if (!findCourse) return { statusCode: 404, data: "course Not found" };
       // checking if the teacher owns the course
       if (findTeacher._id.toString() !== findCourse.teacherId)
         return { statusCode: 403, data: "Not your course" };
+      console.log(findCourse.image?.secure_url);
+      console.log(findCourse.image?.public_id);
+      if (findCourse.image?.secure_url) {
+        await deleteImage(findCourse.image.public_id);
+      } else {
+        await courseDB.findByIdAndUpdate(findCourse._id.toString(), {
+          $set: { completed: findCourse.completed + 1 },
+        });
+      }
       const link = await uploadImage(courseImage);
-      console.log(link);
-      // const result = cloud.
-      // await courseDB.findByIdAndUpdate(courseId, {
-      //   $set: { imageURL: courseImage },
-      // });
+      await courseDB.findByIdAndUpdate(courseId, {
+        $set: {
+          image: {
+            public_id: link.public_id,
+            url: link.url,
+            secure_url: link.secure_url,
+            width: link.width,
+            height: link.height,
+            format: link.format,
+            resource_type: link.resource_type,
+            created_at: link.created_at,
+            size: link.bytes,
+            // asset_folder: link.,
+          },
+        },
+      });
       return { statusCode: 200, data: "course price updated" };
     } catch (err) {
       console.log(err);
