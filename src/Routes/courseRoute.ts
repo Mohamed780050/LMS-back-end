@@ -15,7 +15,8 @@ router
     JWTverifyMW,
     courseControl.updateCourseCategory
   )
-  .post("/edit/:id/coursePrice", JWTverifyMW, courseControl.updateCoursePrice);
+  .post("/edit/:id/coursePrice", JWTverifyMW, courseControl.updateCoursePrice)
+  .post("/edit/:id/courseImage", JWTverifyMW, courseControl.updateCourseImage);
 router
   .route("/:id")
   .get(JWTverifyMW, courseControl.getACourse)

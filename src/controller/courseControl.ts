@@ -127,6 +127,25 @@ async function updateCoursePrice(req: Request, res: Response) {
     res.status(500).json({ data: "Internal server Error" });
   }
 }
+async function updateCourseImage(req: Request, res: Response) {
+  try {
+    const [courseImage, teacherId, courseId] = [
+      req.body.courseImage,
+      req.params.userId,
+      req.params.id,
+    ];
+    if (!courseImage || !teacherId || !courseId) {
+      res
+        .status(400)
+        .json({ data: "course Image URL and teacher id are required" });
+    }
+    const response = await Course.updateImage(courseId, teacherId, courseImage);
+    // res.status(response.statusCode).json(response.data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "Internal server Error" });
+  }
+}
 
 export default {
   getACourse,
@@ -136,4 +155,5 @@ export default {
   updateCourseDescription,
   updateCourseCategory,
   updateCoursePrice,
+  updateCourseImage,
 };

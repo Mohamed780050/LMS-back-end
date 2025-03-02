@@ -1,3 +1,4 @@
+import { uploadImage } from "../utils/upload/cloudinary.config.js";
 import validateIds from "../utils/validateMongoId.js";
 import courseDB from "./database/course.js";
 // import { courseInterface } from "../interfaces/interfaces";
@@ -211,6 +212,35 @@ class Course implements CourseType {
       await courseDB.findByIdAndUpdate(courseId, {
         $set: { price: coursePrice },
       });
+      return { statusCode: 200, data: "course price updated" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal Server Error" };
+    }
+  }
+  static async updateImage(
+    courseId: string,
+    teacherId: string,
+    courseImage: string
+  ) {
+    try {
+      const validId = validateIds([courseId, teacherId]);
+      if (!validId) return { statusCode: 400, data: "In valid id" };
+      const [findTeacher, findCourse] = [
+        await teacherDB.findById(teacherId, { _id: 1 }).lean(),
+        await courseDB.findById(courseId, { teacherId: 1 }).lean(),
+      ];
+      if (!findTeacher) return { statusCode: 404, data: "teacher Not found" };
+      if (!findCourse) return { statusCode: 404, data: "course Not found" };
+      // checking if the teacher owns the course
+      if (findTeacher._id.toString() !== findCourse.teacherId)
+        return { statusCode: 403, data: "Not your course" };
+      const link = await uploadImage(courseImage);
+      console.log(link);
+      // const result = cloud.
+      // await courseDB.findByIdAndUpdate(courseId, {
+      //   $set: { imageURL: courseImage },
+      // });
       return { statusCode: 200, data: "course price updated" };
     } catch (err) {
       console.log(err);
