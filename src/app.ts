@@ -14,6 +14,7 @@ import logout from "./Routes/logoutRoute.js";
 import courses from "./Routes/coursesRoute.js";
 import cors from "cors";
 import { CorsOptions } from "./utils/Cors.js";
+import chapter from "./Routes/chapterRoute.js";
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use("/student", student);
 app.use("/course", course);
 app.use("/courses", courses);
 app.use("/refresh", refreshToken);
+app.use("/chapter", chapter);
 app.use("/logout", logout);
 
 app.use(errorMW);

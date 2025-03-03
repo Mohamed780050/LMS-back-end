@@ -6,7 +6,7 @@ export interface chapterInterface {
   isFree: boolean;
   isPublished: boolean;
   description: string;
-  video: { type: "youtube" | "private"; url: string };
+  video: { kind: "youtube" | "private" | ""; url: string };
   position: number;
   complete: number;
   date: { normal: string; full: string };
@@ -59,7 +59,7 @@ export interface courseInterface {
     resource_type: string;
     created_at: string;
     asset_folder: string;
-    size:number
+    size: number;
   };
   price: number;
   isPublished: boolean;
