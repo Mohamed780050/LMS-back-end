@@ -140,7 +140,7 @@ async function updateCourseImage(req: Request, res: Response) {
         .json({ data: "course Image URL and teacher id are required" });
     }
     const response = await Course.updateImage(courseId, teacherId, courseImage);
-    // res.status(response.statusCode).json(response.data);
+    res.status(response.statusCode).json(response.data);
   } catch (err) {
     console.log(err);
     res.status(500).json({ data: "Internal server Error" });
