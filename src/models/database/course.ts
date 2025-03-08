@@ -79,7 +79,7 @@ const courseSchema = new Schema<courseInterface>(
       type: ["String"],
     },
   },
-  { versionKey: false }
+  { versionKey: false, timestamps: true }
 );
 const courseDB = model("courses", courseSchema, "courses");
 export default courseDB;

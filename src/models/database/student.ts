@@ -54,7 +54,7 @@ const studentSchema = new Schema<studentInterface>(
       default: false,
     },
   },
-  { versionKey: false }
+  { versionKey: false, timestamps: true }
 );
 const studentBD = model("students", studentSchema, "students");
 export default studentBD;

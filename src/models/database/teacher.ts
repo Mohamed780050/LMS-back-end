@@ -45,7 +45,7 @@ const teacherSchema = new Schema<teacherInterface>(
       type: Date,
     },
   },
-  { versionKey: false }
+  { versionKey: false,timestamps:true }
 );
 const teacherDB = model<teacherInterface>(
   "teachers",

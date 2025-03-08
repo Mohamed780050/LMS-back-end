@@ -31,7 +31,7 @@ const chapterSchema = new Schema<chapterInterface>(
       _id: false,
     },
   },
-  { versionKey: false }
+  { versionKey: false ,timestamps:true}
 );
 
 const chapterDB = model("chapters", chapterSchema, "chapters");
