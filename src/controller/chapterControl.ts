@@ -9,7 +9,17 @@ async function addNewChapter(req: Request, res: Response) {
     res.status(response.statusCode).json({ data: response.data });
   } catch (err) {
     console.log(err);
-    res.status(500);
+    res.status(500).json({ data: "internal server Error" });
   }
 }
-export default { addNewChapter };
+async function getChapters(req: Request, res: Response) {
+  try {
+    const { userId, courseId } = req.params;
+    console.log(userId, courseId);
+    res.status(200).json({ data: [] });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "internal server Error" });
+  }
+}
+export default { addNewChapter, getChapters };

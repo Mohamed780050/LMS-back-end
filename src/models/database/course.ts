@@ -72,9 +72,7 @@ const courseSchema = new Schema<courseInterface>(
     students: {
       type: ["String"],
     },
-    chapters: {
-      type: ["String"],
-    },
+    chapters: [{ type: "String", ref: "chapters" }],
     attachments: {
       type: ["String"],
     },

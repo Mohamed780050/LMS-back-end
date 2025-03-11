@@ -16,8 +16,16 @@ class Course implements CourseType {
     try {
       const validId = validateIds([courseId]);
       if (!validId) return { statusCode: 400, data: "In valid id" };
-      const course = await courseDB.findById(`${courseId}`).lean();
+      const course = await courseDB
+        .findById(`${courseId}`)
+        .populate({
+          path: "chapters",
+          select: "chapterName isFree isPublished position",
+          options: { sort: { position: 1 } },
+        })
+        .lean();
       if (!course) return { statusCode: 404, data: "there is no course" };
+      console.log(course);
       return { statusCode: 200, data: course };
     } catch (err) {
       console.log(err);

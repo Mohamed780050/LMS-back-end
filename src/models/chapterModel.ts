@@ -26,9 +26,26 @@ export default class Chapter {
         position: findCourse.chapters.length + 1,
       });
       await courseDB.findByIdAndUpdate(this.courseId, {
-        $push: { chapters: chapter._id.toString() },
+        $push: { chapters: chapter._id },
       });
       return { statusCode: 201, data: "chapter created" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal server error" };
+    }
+  }
+  async getAllOfMyChapter() {
+    try {
+      const validate = validateIds([this.courseId, this.teacherId]);
+      if (!validate) return { statusCode: 400, data: "use Valid id" };
+      const [findCourse, findTeacher] = [
+        await courseDB.findById(this.courseId, { chapters: 1 }).lean(),
+        await teacherDB.findById(this.teacherId, { _id: 1 }).lean(),
+      ];
+      if (!findCourse) return { statusCode: 404, data: "course not found" };
+      if (!findTeacher) return { statusCode: 404, data: "teacher not found" };
+      const chapters = await chapterDB.find({ courseId: this.courseId });
+      return { statusCode: 201, data: chapters };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal server error" };
