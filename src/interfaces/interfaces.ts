@@ -8,8 +8,9 @@ export interface chapterInterface {
   description: string;
   video: { kind: "youtube" | "private" | ""; url: string };
   position: number;
-  complete: number;
+  completed: number;
   date: { normal: string; full: string };
+  total: 3;
 }
 export interface teacherInterface {
   userName: string;

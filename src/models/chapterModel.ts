@@ -45,7 +45,24 @@ export default class Chapter {
       if (!findCourse) return { statusCode: 404, data: "course not found" };
       if (!findTeacher) return { statusCode: 404, data: "teacher not found" };
       const chapters = await chapterDB.find({ courseId: this.courseId });
-      return { statusCode: 201, data: chapters };
+      return { statusCode: 200, data: chapters };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal server error" };
+    }
+  }
+  async getAChapter(chapterId: string) {
+    try {
+      const validate = validateIds([this.teacherId, chapterId]);
+      if (!validate) return { statusCode: 400, data: "use Valid id" };
+      const [findTeacher, findChapter] = [
+        await teacherDB.findById(this.teacherId, { _id: 1 }).lean(),
+        await chapterDB.findById(chapterId).lean(),
+      ];
+      if (!findTeacher) return { statusCode: 404, data: "teacher not found" };
+      if (!findChapter) return { statusCode: 404, data: "chapter not found" };
+
+      return { statusCode: 200, data: findChapter };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal server error" };

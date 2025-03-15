@@ -22,4 +22,15 @@ async function getChapters(req: Request, res: Response) {
     res.status(500).json({ data: "internal server Error" });
   }
 }
-export default { addNewChapter, getChapters };
+async function getAChapter(req: Request, res: Response) {
+  try {
+    const { userId, chapterId } = req.params;
+    const myChapter = new Chapter(userId, chapterId);
+    const response = await myChapter.getAChapter(chapterId);
+    res.status(response.statusCode).json({ data: response.data });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "internal server Error" });
+  }
+}
+export default { addNewChapter, getChapters, getAChapter };

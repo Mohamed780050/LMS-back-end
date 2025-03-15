@@ -25,7 +25,6 @@ class Course implements CourseType {
         })
         .lean();
       if (!course) return { statusCode: 404, data: "there is no course" };
-      console.log(course);
       return { statusCode: 200, data: course };
     } catch (err) {
       console.log(err);

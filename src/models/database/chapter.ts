@@ -21,7 +21,7 @@ const chapterSchema = new Schema<chapterInterface>(
     description: { type: "String", default: "" },
     video: { type: videoSchema, default: { kind: "", url: "" } },
     position: { type: "Number" },
-    complete: { type: "Number", default: 1 },
+    completed: { type: "Number", default: 1 },
     date: {
       type: dataSchema,
       default: {
@@ -30,8 +30,9 @@ const chapterSchema = new Schema<chapterInterface>(
       },
       _id: false,
     },
+    total: { type: "Number", default: 3 },
   },
-  { versionKey: false ,timestamps:true}
+  { versionKey: false, timestamps: true }
 );
 
 const chapterDB = model("chapters", chapterSchema, "chapters");
