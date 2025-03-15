@@ -68,4 +68,29 @@ export default class Chapter {
       return { statusCode: 500, data: "Internal server error" };
     }
   }
+  async deleteChapter(chapterId: string) {
+    try {
+      const validate = validateIds([this.teacherId, chapterId]);
+      if (!validate) return { statusCode: 400, data: "use Valid id" };
+      const [findTeacher, findChapter] = [
+        await teacherDB.findById(this.teacherId, { _id: 1, courses: 1 }).lean(),
+        await chapterDB.findById(chapterId).lean(),
+      ];
+      if (!findTeacher) return { statusCode: 404, data: "teacher not found" };
+      if (!findChapter) return { statusCode: 404, data: "chapter not found" };
+      const findCourseId = findTeacher.courses.find(
+        (course) => course === findChapter.courseId
+      );
+      if (!findCourseId) return { statusCode: 403, data: "Not your course" };
+      await chapterDB.deleteOne({ _id: chapterId });
+      await courseDB.updateOne(
+        { _id: findCourseId },
+        { $pull: { chapters: chapterId } }
+      );
+      return { statusCode: 200, data: "Chapter deleted" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal server error" };
+    }
+  }
 }

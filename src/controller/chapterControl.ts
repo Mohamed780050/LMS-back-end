@@ -33,4 +33,16 @@ async function getAChapter(req: Request, res: Response) {
     res.status(500).json({ data: "internal server Error" });
   }
 }
-export default { addNewChapter, getChapters, getAChapter };
+async function deleteChapter(req: Request, res: Response) {
+  try {
+    const { userId, chapterId } = req.params;
+    const myChapter = new Chapter(userId, "");
+    const response = await myChapter.deleteChapter(chapterId);
+    res.status(response.statusCode).json({ data: response.data });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "internal server Error" });
+  }
+}
+
+export default { addNewChapter, getChapters, getAChapter, deleteChapter };
