@@ -3,14 +3,20 @@ import { chapterInterface } from "../../interfaces/interfaces";
 import time from "../../utils/time.js";
 
 const date = time();
-const dataSchema = new Schema({
-  normal: "String",
-  full: "String",
-});
-const videoSchema = new Schema({
-  kind: "String",
-  url: "string",
-});
+const dataSchema = new Schema(
+  {
+    normal: "String",
+    full: "String",
+  },
+  { _id: false }
+);
+const videoSchema = new Schema(
+  {
+    kind: "String",
+    url: "string",
+  },
+  { _id: false }
+);
 const chapterSchema = new Schema<chapterInterface>(
   {
     chapterName: { type: "String" },

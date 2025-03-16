@@ -18,4 +18,5 @@ router.post(
   chapterControl.UpdateChapterDescription
 );
 router.post("/:chapterId/access", JWTverifyMW, chapterControl.changeVisibility);
+router.post("/:chapterId/video", JWTverifyMW, chapterControl.changeVideo);
 export default router;

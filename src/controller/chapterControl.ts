@@ -92,10 +92,23 @@ async function changeVisibility(req: Request, res: Response) {
       return;
     }
     const myChapter = new Chapter(userId, "");
-    const response = await myChapter.changeVisibility(
-      chapterId,
-      isFree
-    );
+    const response = await myChapter.changeVisibility(chapterId, isFree);
+    res.status(response.statusCode).json({ data: response.data });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "internal server Error" });
+  }
+}
+async function changeVideo(req: Request, res: Response) {
+  try {
+    const { userId, chapterId } = req.params;
+    const { url } = req.body;
+    if (!userId || !chapterId || !url) {
+      res.status(400).json({ data: "all fields are required" });
+      return;
+    }
+    const myChapter = new Chapter(userId, "");
+    const response = await myChapter.changeVideo(chapterId, url);
     res.status(response.statusCode).json({ data: response.data });
   } catch (err) {
     console.log(err);
@@ -111,4 +124,5 @@ export default {
   UpdateChapterName,
   UpdateChapterDescription,
   changeVisibility,
+  changeVideo,
 };
