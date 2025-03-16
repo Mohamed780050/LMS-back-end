@@ -182,10 +182,18 @@ export default class Chapter {
         (course) => course === findChapter.courseId
       );
       if (!findCourseId) return { statusCode: 403, data: "Not your course" };
-      await chapterDB.updateOne(
-        { _id: chapterId },
-        { $set: { video: { url: url } } }
-      );
+      if (findChapter.video.url === "")
+        await chapterDB.updateOne(
+          { _id: chapterId },
+          {
+            $set: { video: { url: url }, completed: findChapter.completed + 1 },
+          }
+        );
+      else
+        await chapterDB.updateOne(
+          { _id: chapterId },
+          { $set: { video: { url: url } } }
+        );
       return { statusCode: 200, data: "Chapter video updated" };
     } catch (err) {
       console.log(err);
