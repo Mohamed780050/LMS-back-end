@@ -131,7 +131,37 @@ export default class Chapter {
         (course) => course === findChapter.courseId
       );
       if (!findCourseId) return { statusCode: 403, data: "Not your course" };
-      await chapterDB.updateOne({ _id: chapterId }, { $set: { description } });
+      if (findChapter.description === "")
+        await chapterDB.updateOne(
+          { _id: chapterId },
+          { $set: { description, completed: findChapter.completed + 1 } }
+        );
+      else
+        await chapterDB.updateOne(
+          { _id: chapterId },
+          { $set: { description } }
+        );
+      return { statusCode: 200, data: "Chapter description updated" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal server error" };
+    }
+  }
+  async changeVisibility(chapterId: string, isFree: boolean) {
+    try {
+      const validate = validateIds([this.teacherId, chapterId]);
+      if (!validate) return { statusCode: 400, data: "use Valid id" };
+      const [findTeacher, findChapter] = [
+        await teacherDB.findById(this.teacherId, { _id: 1, courses: 1 }).lean(),
+        await chapterDB.findById(chapterId).lean(),
+      ];
+      if (!findTeacher) return { statusCode: 404, data: "teacher not found" };
+      if (!findChapter) return { statusCode: 404, data: "chapter not found" };
+      const findCourseId = findTeacher.courses.find(
+        (course) => course === findChapter.courseId
+      );
+      if (!findCourseId) return { statusCode: 403, data: "Not your course" };
+      await chapterDB.updateOne({ _id: chapterId }, { $set: { isFree } });
       return { statusCode: 200, data: "Chapter description updated" };
     } catch (err) {
       console.log(err);

@@ -83,6 +83,25 @@ async function UpdateChapterDescription(req: Request, res: Response) {
     res.status(500).json({ data: "internal server Error" });
   }
 }
+async function changeVisibility(req: Request, res: Response) {
+  try {
+    const { userId, chapterId } = req.params;
+    const { isFree } = req.body;
+    if (!userId || !chapterId || !isFree) {
+      res.status(400).json({ data: "all fields are required" });
+      return;
+    }
+    const myChapter = new Chapter(userId, "");
+    const response = await myChapter.changeVisibility(
+      chapterId,
+      isFree
+    );
+    res.status(response.statusCode).json({ data: response.data });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "internal server Error" });
+  }
+}
 
 export default {
   addNewChapter,
@@ -91,4 +110,5 @@ export default {
   deleteChapter,
   UpdateChapterName,
   UpdateChapterDescription,
+  changeVisibility,
 };

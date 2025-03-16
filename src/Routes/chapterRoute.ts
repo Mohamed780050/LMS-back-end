@@ -17,4 +17,5 @@ router.post(
   JWTverifyMW,
   chapterControl.UpdateChapterDescription
 );
+router.post("/:chapterId/access", JWTverifyMW, chapterControl.changeVisibility);
 export default router;
