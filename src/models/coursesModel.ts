@@ -46,7 +46,7 @@ export default class Courses {
       return { statusCode: 500, data: "Internal server error" };
     }
   }
-  async getCoursesNumber() {
+  async getCoursesNumber(search: string) {
     try {
       const isObjectId = mongoose.Types.ObjectId.isValid(this.teacherId);
       if (!isObjectId)
@@ -55,6 +55,7 @@ export default class Courses {
       if (!findTeacher) return { statusCode: 404, data: "Teacher Not found" };
       const teacherCourses = await courseDB.countDocuments({
         teacherId: this.teacherId,
+        courseName: { $regex: `${search ? search : ""}`, $options: "i" },
       });
       console.log(teacherCourses);
       return { statusCode: 200, data: teacherCourses };

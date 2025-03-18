@@ -14,8 +14,6 @@ async function getTeacherCourses(req: Request, res: Response) {
         .json({ data: "Page must be a string that contain a number" });
       return;
     }
-    console.log(page)
-    console.log(parseInt(page))
     if (isNaN(parseInt(page))) {
       res.status(400).json({ data: "Page must be an int number" });
       return;
@@ -45,7 +43,9 @@ async function getCoursesNumber(req: Request, res: Response) {
       return;
     }
     const teacherCourses = new Courses(userId);
-    const response = await teacherCourses.getCoursesNumber();
+    const response = await teacherCourses.getCoursesNumber(
+      `${req.query.search}`
+    );
     res.status(response.statusCode).json(response.data);
   } catch (err) {
     console.log(err);
