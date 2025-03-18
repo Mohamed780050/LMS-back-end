@@ -1,5 +1,6 @@
 import { deleteImage, uploadImage } from "../utils/upload/cloudinary.config.js";
 import validateIds from "../utils/validateMongoId.js";
+import chapterDB from "./database/chapter.js";
 import courseDB from "./database/course.js";
 // import { courseInterface } from "../interfaces/interfaces";
 import teacherDB from "./database/teacher.js";
@@ -81,6 +82,7 @@ class Course implements CourseType {
       if (!teacher) return { statusCode: 400, data: "Your are not a teacher" };
       if (course.teacherId !== teacher._id.toString())
         return { statusCode: 403, data: "This is not your course" };
+      await chapterDB.deleteMany({ courseId: course._id });
       await courseDB.deleteOne({ _id: course._id });
       await teacherDB.findByIdAndUpdate(teacherId, {
         $pull: { courses: courseId },
