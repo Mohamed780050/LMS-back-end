@@ -116,6 +116,23 @@ async function changeVideo(req: Request, res: Response) {
   }
 }
 
+async function publishChapter(req: Request, res: Response) {
+  try {
+    const { userId, chapterId } = req.params;
+    const { isPublished } = req.body;
+    if (!userId || !chapterId ) {
+      res.status(400).json({ data: "all fields are required" });
+      return;
+    }
+    const myChapter = new Chapter(userId, "");
+    const response = await myChapter.publish(chapterId, isPublished);
+    res.status(response.statusCode).json({ data: response.data });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "internal server Error" });
+  }
+}
+
 export default {
   addNewChapter,
   getChapters,
@@ -125,4 +142,5 @@ export default {
   UpdateChapterDescription,
   changeVisibility,
   changeVideo,
+  publishChapter,
 };

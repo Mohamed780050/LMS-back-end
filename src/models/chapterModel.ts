@@ -200,4 +200,52 @@ export default class Chapter {
       return { statusCode: 500, data: "Internal server error" };
     }
   }
+  async publish(chapterId: string, isPublished: boolean) {
+    try {
+      const validate = validateIds([this.teacherId, chapterId]);
+      if (!validate) return { statusCode: 400, data: "use Valid id" };
+      const [findTeacher, findChapter] = [
+        await teacherDB.findById(this.teacherId, { _id: 1, courses: 1 }).lean(),
+        await chapterDB.findById(chapterId).lean(),
+      ];
+      if (!findTeacher) return { statusCode: 404, data: "teacher not found" };
+      if (!findChapter) return { statusCode: 404, data: "chapter not found" };
+      const findCourseId = findTeacher.courses.find(
+        (course) => course === findChapter.courseId
+      );
+      if (!findCourseId) return { statusCode: 403, data: "Not your course" };
+      if (typeof isPublished !== "boolean")
+        return { statusCode: 400, data: "isPublished must be boolean value" };
+      await chapterDB.updateOne({ _id: chapterId }, { $set: { isPublished } });
+      const myCourse = await courseDB
+        .findById(findCourseId, { chapters: 1, isPublished: 1, completed: 1 })
+        .populate("chapters", "isPublished")
+        .lean();
+      if (!myCourse) return { statusCode: 404, data: "Course Not found" };
+      const hasPublishedChapter = myCourse?.chapters.some(
+        (chapter) => chapter.isPublished
+      );
+      console.log(hasPublishedChapter);
+      console.log(myCourse);
+      console.log(hasPublishedChapter && !myCourse.isPublished);
+      console.log(!hasPublishedChapter && myCourse.isPublished);
+      if (hasPublishedChapter && !myCourse.isPublished)
+        await courseDB.findOneAndUpdate(
+          { _id: findCourseId },
+          { $set: { completed: myCourse.completed + 1 } }
+        );
+      if (
+        !hasPublishedChapter &&
+        (myCourse.isPublished || !myCourse.isPublished)
+      )
+        await courseDB.findOneAndUpdate(
+          { _id: findCourseId },
+          { $set: { completed: myCourse?.completed - 1, isPublished: false } }
+        );
+      return { statusCode: 200, data: "Chapter video updated" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal server error" };
+    }
+  }
 }
