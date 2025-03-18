@@ -67,7 +67,7 @@ const courseSchema = new Schema<courseInterface>(
     },
     total: {
       type: "Number",
-      default: 6,
+      default: 5,
     },
     students: {
       type: ["String"],
