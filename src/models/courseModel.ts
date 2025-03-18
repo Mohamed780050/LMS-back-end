@@ -276,6 +276,34 @@ class Course implements CourseType {
       return { statusCode: 500, data: "Internal Server Error" };
     }
   }
+  static async publish(
+    courseId: string,
+    teacherId: string,
+    isPublished: boolean
+  ) {
+    try {
+      const validId = validateIds([courseId, teacherId]);
+      if (!validId) return { statusCode: 400, data: "In valid id" };
+      if (typeof isPublished !== "boolean")
+        return { statusCode: 400, data: "isPublished must be boolean value" };
+      const [findTeacher, findCourse] = [
+        await teacherDB.findById(teacherId, { _id: 1 }).lean(),
+        await courseDB
+          .findById(courseId, { teacherId: 1, completed: 1, isPublished: 1 })
+          .lean(),
+      ];
+      if (!findTeacher) return { statusCode: 404, data: "teacher Not found" };
+      if (!findCourse) return { statusCode: 404, data: "course Not found" };
+      // checking if the teacher owns the course
+      if (findTeacher._id.toString() !== findCourse.teacherId)
+        return { statusCode: 403, data: "Not your course" };
+      await courseDB.findByIdAndUpdate(courseId, { $set: { isPublished } });
+      return { statusCode: 200, data: "course price updated" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal Server Error" };
+    }
+  }
 }
 
 export default Course;

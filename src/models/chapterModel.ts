@@ -222,7 +222,7 @@ export default class Chapter {
         .populate("chapters", "isPublished")
         .lean();
       if (!myCourse) return { statusCode: 404, data: "Course Not found" };
-      const hasPublishedChapter = myCourse?.chapters.some(
+      const hasPublishedChapter = myCourse.chapters.some(
         (chapter) => chapter.isPublished
       );
       console.log(hasPublishedChapter);
@@ -240,7 +240,7 @@ export default class Chapter {
       )
         await courseDB.findOneAndUpdate(
           { _id: findCourseId },
-          { $set: { completed: myCourse?.completed - 1, isPublished: false } }
+          { $set: { completed: myCourse.completed - 1, isPublished: false } }
         );
       return { statusCode: 200, data: "Chapter video updated" };
     } catch (err) {

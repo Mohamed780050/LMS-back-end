@@ -146,6 +146,23 @@ async function updateCourseImage(req: Request, res: Response) {
     res.status(500).json({ data: "Internal server Error" });
   }
 }
+async function publishCourse(req: Request, res: Response) {
+  try {
+    const [isPublished, teacherId, courseId] = [
+      req.body.isPublished,
+      req.params.userId,
+      req.params.id,
+    ];
+    if (!teacherId || !courseId) {
+      res.status(400).json({ data: "all the fields are required" });
+    }
+    const response = await Course.publish(courseId, teacherId, isPublished);
+    res.status(response.statusCode).json(response.data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "Internal server Error" });
+  }
+}
 
 export default {
   getACourse,
@@ -156,4 +173,5 @@ export default {
   updateCourseCategory,
   updateCoursePrice,
   updateCourseImage,
+  publishCourse,
 };
