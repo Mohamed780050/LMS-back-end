@@ -25,6 +25,8 @@ export interface teacherInterface {
   resetPasswordTokenExpire: Date;
   verificationCode: string;
   verificationCodeExpire: Date;
+  studentsNumber?: number;
+  courseNumber?: number;
 }
 export interface authInterface {
   identifier: string;

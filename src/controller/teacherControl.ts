@@ -34,4 +34,18 @@ async function addNewTeacher(req: Request, res: Response) {
     res.status(500).json({ data: "Inter server error" });
   }
 }
-export default { getAllTeachers, addNewTeacher };
+async function getInfoCard(req: Request, res: Response) {
+  try {
+    const { userId } = req.params;
+    if (!userId) {
+      res.status(400).json({ data: "need user Id" });
+      return;
+    }
+    const response = await Teacher.InfoCard(userId);
+    res.status(response.statusCode).json({ data: response.data });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "Inter server error" });
+  }
+}
+export default { getAllTeachers, addNewTeacher, getInfoCard };

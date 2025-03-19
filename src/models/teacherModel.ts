@@ -1,6 +1,7 @@
 import { teacherInterface } from "../interfaces/interfaces";
 import { sendVerificationEmail } from "../utils/emails/email.js";
 import generateVerificationCode from "../utils/generateVerificationCode.js";
+import validateIds from "../utils/validateMongoId.js";
 import teacherDB from "./database/teacher.js";
 import bcrypt from "bcrypt";
 export default class Teacher
@@ -53,7 +54,10 @@ export default class Teacher
         $or: [{ email: this.email }, { userName: this.userName }],
       });
       if (checkTheTeacher) {
-        return { statusCode: 400, data: "The email or username is already taken" };
+        return {
+          statusCode: 400,
+          data: "The email or username is already taken",
+        };
       }
       const hashedPassword = await bcrypt.hash(this.password, 10);
       const verificationCode = generateVerificationCode();
@@ -67,8 +71,35 @@ export default class Teacher
         verificationCode,
         verificationCodeExpire: Date.now() + 2 * 60 * 60 * 1000,
       });
-      await sendVerificationEmail(teacher.email,verificationCode)
+      await sendVerificationEmail(teacher.email, verificationCode);
       return { statusCode: 201, data: "Teacher created" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "something went wrong" };
+    }
+  }
+  static async InfoCard(teacherId: string) {
+    try {
+      const validId = validateIds([teacherId]);
+      if (!validId) return { statusCode: 400, data: "something went wrong" };
+      const teacher = await teacherDB
+        .findById(teacherId, {
+          studentsNumber: { $size: "$students" },
+          courses: 1,
+          courseNumber: { $size: "$courses" },
+        })
+        .populate({
+          path: "courses",
+          select: "students",
+        })
+        .lean();
+      console.log(teacher);
+      if (!teacher) return { statusCode: 404, data: "teacher not found" };
+      // TODO: Remember to use grouping in here
+      return {
+        statusCode: 200,
+        data: [teacher.studentsNumber, 0, 0, teacher.courseNumber],
+      };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "something went wrong" };

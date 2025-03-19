@@ -24,6 +24,7 @@ const teacherSchema = new Schema<teacherInterface>(
     courses: {
       type: [String],
       required: false,
+      ref:"courses"
     },
     students: {
       type: [String],
