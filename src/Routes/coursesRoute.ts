@@ -7,4 +7,5 @@ router
   .route("/teacherCourse")
   .get(JWTverifyMW, coursesController.getTeacherCourses);
 router.get("/courseNumber", JWTverifyMW, coursesController.getCoursesNumber);
+router.get("/published",JWTverifyMW,coursesController.getAllPublishedCourses)
 export default router;

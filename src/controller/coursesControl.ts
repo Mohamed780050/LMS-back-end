@@ -51,4 +51,31 @@ async function getCoursesNumber(req: Request, res: Response) {
     console.log(err);
   }
 }
-export default { getTeacherCourses, getAllCourses, getCoursesNumber };
+async function getAllPublishedCourses(req: Request, res: Response) {
+  try {
+    const { userId } = req.params;
+    const { query, page, category } = req.query;
+    if (!userId) {
+      res.status(400).json({ data: "Teacher ID is required" });
+      return;
+    }
+    const pageNumber = parseInt(`${page}`);
+    if (isNaN(pageNumber)) {
+      res.status(400).json({ data: "page is not a number" });
+    }
+    const response = await Courses.getAllPublishedCourses(
+      `${query}`,
+      pageNumber,
+      `${category}`
+    );
+    res.status(response.statusCode).json(response.data);
+  } catch (err) {
+    console.log(err);
+  }
+}
+export default {
+  getTeacherCourses,
+  getAllCourses,
+  getCoursesNumber,
+  getAllPublishedCourses,
+};
