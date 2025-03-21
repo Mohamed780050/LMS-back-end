@@ -2,6 +2,7 @@ import chapterDB from "./database/chapter.js";
 import validateIds from "../utils/validateMongoId.js";
 import courseDB from "./database/course.js";
 import teacherDB from "./database/teacher.js";
+import { chapterInterface } from "../interfaces/interfaces.js";
 export default class Chapter {
   teacherId: string;
   courseId: string;
@@ -223,12 +224,8 @@ export default class Chapter {
         .lean();
       if (!myCourse) return { statusCode: 404, data: "Course Not found" };
       const hasPublishedChapter = myCourse.chapters.some(
-        (chapter) => chapter.isPublished
+        (chapter:any) => chapter.isPublished
       );
-      console.log(hasPublishedChapter);
-      console.log(myCourse);
-      console.log(hasPublishedChapter && !myCourse.isPublished);
-      console.log(!hasPublishedChapter && myCourse.isPublished);
       if (hasPublishedChapter && !myCourse.isPublished)
         await courseDB.findOneAndUpdate(
           { _id: findCourseId },
@@ -243,6 +240,26 @@ export default class Chapter {
           { $set: { completed: myCourse.completed - 1, isPublished: false } }
         );
       return { statusCode: 200, data: "Chapter video updated" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal server error" };
+    }
+  }
+  async reorder(newReorder: { _id: string; position: number }[]) {
+    try {
+      const validate = validateIds([this.teacherId]);
+      if (!validate) return { statusCode: 400, data: "use Valid id" };
+      const [findTeacher] = [
+        await teacherDB.findById(this.teacherId, { _id: 1, courses: 1 }).lean(),
+      ];
+      if (!findTeacher) return { statusCode: 404, data: "teacher not found" };
+      newReorder.map(async (chapter) => {
+        await chapterDB.findOneAndUpdate(
+          { _id: chapter._id },
+          { $set: { position: chapter.position } }
+        );
+      });
+      return { statusCode: 200, data: "Chapter Reordered" };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal server error" };

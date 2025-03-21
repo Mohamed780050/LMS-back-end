@@ -76,7 +76,7 @@ export interface courseInterface {
   completed: number;
   total: number;
   students: string[];
-  chapters: string[];
+  chapters: string[] | chapterInterface[];
   attachments: string[];
 }
 

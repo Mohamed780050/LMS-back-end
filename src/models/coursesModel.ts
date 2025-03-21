@@ -64,4 +64,15 @@ export default class Courses {
       return { statusCode: 500, data: "Internal server error" };
     }
   }
+  static async getAllPublishedCourses(
+    search: string,
+    page: number,
+    category: string
+  ) {
+    try {
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal server error" };
+    }
+  }
 }

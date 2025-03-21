@@ -115,17 +115,33 @@ async function changeVideo(req: Request, res: Response) {
     res.status(500).json({ data: "internal server Error" });
   }
 }
-
 async function publishChapter(req: Request, res: Response) {
   try {
     const { userId, chapterId } = req.params;
     const { isPublished } = req.body;
-    if (!userId || !chapterId ) {
+    if (!userId || !chapterId) {
       res.status(400).json({ data: "all fields are required" });
       return;
     }
     const myChapter = new Chapter(userId, "");
     const response = await myChapter.publish(chapterId, isPublished);
+    res.status(response.statusCode).json({ data: response.data });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "internal server Error" });
+  }
+}
+async function reorderChapters(req: Request, res: Response) {
+  try {
+    const { userId } = req.params;
+    const { newOrder }: { newOrder: { _id: string; position: number }[] } =
+      req.body;
+    if (!userId || !newOrder) {
+      res.status(400).json({ data: "all fields are required" });
+      return;
+    }
+    const myChapter = new Chapter(userId, "");
+    const response = await myChapter.reorder(newOrder);
     res.status(response.statusCode).json({ data: response.data });
   } catch (err) {
     console.log(err);
@@ -143,4 +159,5 @@ export default {
   changeVisibility,
   changeVideo,
   publishChapter,
+  reorderChapters,
 };
