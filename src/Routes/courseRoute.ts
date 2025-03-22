@@ -22,4 +22,5 @@ router
   .route("/:id")
   .get(JWTverifyMW, courseControl.getACourse)
   .delete(JWTverifyMW, courseControl.deleteACourse);
+router.get("/:id/student",JWTverifyMW,courseControl.getACourseForStudent)
 export default router;

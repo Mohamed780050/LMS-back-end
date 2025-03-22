@@ -306,6 +306,39 @@ class Course implements CourseType {
       return { statusCode: 500, data: "Internal Server Error" };
     }
   }
+  static async getACourseForStudent(courseId: string) {
+    try {
+      const validId = validateIds([courseId]);
+      if (!validId) return { statusCode: 400, data: "In valid id" };
+      const course = await courseDB
+        .findById(`${courseId}`, {
+          image: {
+            public_id: 0,
+            format: 0,
+            resource_type: 0,
+            created_at: 0,
+            asset_folder: 0,
+            size: 0,
+          },
+          completed: 0,
+          students: 0,
+          attachments: 0,
+          total: 0,
+        })
+        .populate({
+          path: "chapters",
+          match: { isPublished: true },
+          select: "chapterName isFree description",
+          options: { sort: { position: 1 } },
+        })
+        .lean();
+      if (!course) return { statusCode: 404, data: "there is no course" };
+      return { statusCode: 200, data: course };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal Server Error" };
+    }
+  }
 }
 
 export default Course;
