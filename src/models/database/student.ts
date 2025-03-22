@@ -1,28 +1,6 @@
 import { Schema, model } from "mongoose";
 import { studentInterface } from "../../interfaces/interfaces";
-const chapterSchema = new Schema({
-  chapterId: {
-    type: String,
-    required: true,
-  },
-  done: {
-    type: Boolean,
-    default: false,
-  },
-});
-const coursesSchema = new Schema({
-  courseId: {
-    type: String,
-  },
-  done: {
-    type: Boolean,
-    default: false,
-  },
-  chapters: {
-    type: [chapterSchema],
-    default: [],
-  },
-});
+
 const studentSchema = new Schema<studentInterface>(
   {
     userName: {
@@ -42,7 +20,7 @@ const studentSchema = new Schema<studentInterface>(
       default: "",
     },
     courses: {
-      type: [coursesSchema],
+      type: [String],
       default: [],
     },
     refreshToken: {

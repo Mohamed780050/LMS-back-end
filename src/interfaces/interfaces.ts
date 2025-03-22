@@ -38,11 +38,7 @@ export interface studentInterface {
   password: string;
   avatar?: string;
   refreshToken: string;
-  courses?: {
-    courseId: string;
-    done: boolean;
-    chapters: { chapterId: string; done: boolean }[];
-  }[];
+  courses?: string[];
   isVerified: boolean;
   resetPasswordToken: string;
   resetPasswordTokenExpire: Date;
