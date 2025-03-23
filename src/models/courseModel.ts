@@ -2,6 +2,7 @@ import { deleteImage, uploadImage } from "../utils/upload/cloudinary.config.js";
 import validateIds from "../utils/validateMongoId.js";
 import chapterDB from "./database/chapter.js";
 import courseDB from "./database/course.js";
+import purchaseDB from "./database/purchase.js";
 // import { courseInterface } from "../interfaces/interfaces";
 import teacherDB from "./database/teacher.js";
 import mongoose, { Mongoose } from "mongoose";
@@ -306,9 +307,9 @@ class Course implements CourseType {
       return { statusCode: 500, data: "Internal Server Error" };
     }
   }
-  static async getACourseForStudent(courseId: string) {
+  static async getACourseForStudent(courseId: string, studentId: string) {
     try {
-      const validId = validateIds([courseId]);
+      const validId = validateIds([courseId, studentId]);
       if (!validId) return { statusCode: 400, data: "In valid id" };
       const course = await courseDB
         .findById(`${courseId}`, {
@@ -333,7 +334,10 @@ class Course implements CourseType {
         })
         .lean();
       if (!course) return { statusCode: 404, data: "there is no course" };
-      return { statusCode: 200, data: course };
+      const enrolled = await purchaseDB.find({ courseId, studentId });
+      if (enrolled.length)
+        return { statusCode: 200, data: { ...course, enrolled: true } };
+      else return { statusCode: 200, data: { ...course, enrolled: false } };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal Server Error" };

@@ -1,7 +1,7 @@
-import validateIds from "../utils/validateMongoId";
-import courseDB from "./database/course";
-import purchaseDB from "./database/purchase";
-import studentBD from "./database/student";
+import validateIds from "../utils/validateMongoId.js";
+import courseDB from "./database/course.js";
+import purchaseDB from "./database/purchase.js";
+import studentBD from "./database/student.js";
 
 export class Purchase {
   studentId: string;

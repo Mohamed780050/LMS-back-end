@@ -165,13 +165,12 @@ async function publishCourse(req: Request, res: Response) {
 }
 async function getACourseForStudent(req: Request, res: Response) {
   try {
-    const { id } = req.params;
-    console.log(id);
+    const { id,userId } = req.params;
     if (!id) {
       res.status(400).json({ data: "id is required" });
       return;
     }
-    const response = await Course.getACourseForStudent(id);
+    const response = await Course.getACourseForStudent(id,userId);
     res.status(response.statusCode).json({ course: response.data });
   } catch (err) {
     console.log(err);

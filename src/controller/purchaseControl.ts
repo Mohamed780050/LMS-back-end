@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Purchase } from "../models/purchaseModel";
+import { Purchase } from "../models/purchaseModel.js";
 
 async function createAPurchase(req: Request, res: Response) {
   try {

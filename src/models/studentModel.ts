@@ -17,13 +17,7 @@ class Student
   email: string;
   password: string;
   avatar: string | undefined;
-  courses:
-    | {
-        courseId: string;
-        done: boolean;
-        chapters: { chapterId: string; done: boolean }[];
-      }[]
-    | undefined;
+  courses: [] | undefined;
   constructor(userName: string, email: string, password: string) {
     this.userName = userName;
     this.email = email;
