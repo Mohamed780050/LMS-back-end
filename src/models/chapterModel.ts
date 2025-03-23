@@ -205,10 +205,10 @@ export default class Chapter {
     try {
       const validate = validateIds([this.teacherId, chapterId]);
       if (!validate) return { statusCode: 400, data: "use Valid id" };
-      const [findTeacher, findChapter] = [
-        await teacherDB.findById(this.teacherId, { _id: 1, courses: 1 }).lean(),
-        await chapterDB.findById(chapterId).lean(),
-      ];
+      const [findTeacher, findChapter] = await Promise.all([
+        teacherDB.findById(this.teacherId, { _id: 1, courses: 1 }).lean(),
+        chapterDB.findById(chapterId).lean(),
+      ]);
       if (!findTeacher) return { statusCode: 404, data: "teacher not found" };
       if (!findChapter) return { statusCode: 404, data: "chapter not found" };
       const findCourseId = findTeacher.courses.find(
@@ -224,17 +224,22 @@ export default class Chapter {
         .lean();
       if (!myCourse) return { statusCode: 404, data: "Course Not found" };
       const hasPublishedChapter = myCourse.chapters.some(
-        (chapter:any) => chapter.isPublished
+        (chapter: any) => chapter.isPublished
       );
-      if (hasPublishedChapter && !myCourse.isPublished)
+      const PublishedChapter = myCourse.chapters.filter(
+        (chapter: any) => chapter.isPublished
+      );
+      console.log(PublishedChapter);
+      if (
+        hasPublishedChapter &&
+        PublishedChapter.length === 1 &&
+        myCourse.completed <= 4
+      )
         await courseDB.findOneAndUpdate(
           { _id: findCourseId },
           { $set: { completed: myCourse.completed + 1 } }
         );
-      if (
-        !hasPublishedChapter &&
-        (myCourse.isPublished || !myCourse.isPublished)
-      )
+      if (!hasPublishedChapter)
         await courseDB.findOneAndUpdate(
           { _id: findCourseId },
           { $set: { completed: myCourse.completed - 1, isPublished: false } }

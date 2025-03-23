@@ -2,6 +2,8 @@ import validateIds from "../utils/validateMongoId.js";
 import courseDB from "./database/course.js";
 import purchaseDB from "./database/purchase.js";
 import studentBD from "./database/student.js";
+import teacherDB from "./database/teacher.js";
+import Teacher from "./teacherModel.js";
 
 export class Purchase {
   studentId: string;
@@ -38,6 +40,10 @@ export class Purchase {
         ),
         courseDB.findOneAndUpdate(
           { _id: this.courseId },
+          { $addToSet: { students: this.studentId } }
+        ),
+        teacherDB.findOneAndUpdate(
+          { _id: findCourse.teacherId },
           { $addToSet: { students: this.studentId } }
         ),
       ]);
