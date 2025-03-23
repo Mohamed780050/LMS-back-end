@@ -75,7 +75,14 @@ export interface courseInterface {
   chapters: string[] | chapterInterface[];
   attachments: string[];
 }
-
 export interface refreshTokenPayloadInterface extends JwtPayload {
   userId: string;
+}
+export interface PurchaseInterface {
+  studentId: string,
+  courseId: string,
+  purchasedAt:Date,
+  completedChapters: string[], // Track completed chapters
+  progress: number, // Course progress percentage
+  completed: boolean, // If the student finished the course
 }

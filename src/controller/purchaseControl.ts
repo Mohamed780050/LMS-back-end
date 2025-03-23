@@ -13,4 +13,15 @@ async function createAPurchase(req: Request, res: Response) {
     res.status(500).json({ data: "Internal server error" });
   }
 }
-export default { createAPurchase };
+async function getAPurchase(req: Request, res: Response) {
+  try {
+    const { userId, id } = req.params;
+    const purchase = new Purchase(userId, id);
+    const response = await purchase.get();
+    res.status(response.statusCode).json({ data: response.data });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "Internal server error" });
+  }
+}
+export default { createAPurchase, getAPurchase };
