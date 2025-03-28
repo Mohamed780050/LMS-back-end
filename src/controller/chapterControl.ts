@@ -148,6 +148,28 @@ async function reorderChapters(req: Request, res: Response) {
     res.status(500).json({ data: "internal server Error" });
   }
 }
+async function getChapterForStudent(req: Request, res: Response) {
+  try {
+    const { userId, chapterId } = req.params;
+    const myChapter = new Chapter(userId, chapterId);
+    const response = await myChapter.getChapterForStudent(chapterId);
+    res.status(response.statusCode).json({ data: response.data });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "internal server Error" });
+  }
+}
+async function getChaptersForStudent(req: Request, res: Response) {
+  try {
+    const { userId, courseId } = req.params;
+    const myChapter = new Chapter(userId, courseId);
+    const response = await myChapter.getChaptersForStudent(courseId);
+    res.status(response.statusCode).json({ data: response.data });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "internal server Error" });
+  }
+}
 
 export default {
   addNewChapter,
@@ -160,4 +182,6 @@ export default {
   changeVideo,
   publishChapter,
   reorderChapters,
+  getChapterForStudent,
+  getChaptersForStudent,
 };

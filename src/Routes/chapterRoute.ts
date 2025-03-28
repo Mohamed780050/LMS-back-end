@@ -20,5 +20,7 @@ router.post(
 router.post("/:chapterId/access", JWTverifyMW, chapterControl.changeVisibility);
 router.post("/:chapterId/video", JWTverifyMW, chapterControl.changeVideo);
 router.post("/:chapterId/publish", JWTverifyMW, chapterControl.publishChapter);
-router.post("/reorder",JWTverifyMW,chapterControl.reorderChapters)
+router.post("/reorder",JWTverifyMW,chapterControl.reorderChapters);
+router.get("/:chapterId/student",JWTverifyMW,chapterControl.getChapterForStudent)
+router.get("/chapters/:courseId",JWTverifyMW,chapterControl.getChaptersForStudent)
 export default router;

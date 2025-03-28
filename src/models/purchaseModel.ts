@@ -18,7 +18,7 @@ export class Purchase {
       if (!validId) return { statusCode: 400, data: "Invalid ID" };
       const [findStudent, findCourse, existingPurchase] = await Promise.all([
         studentBD.findById(this.studentId, { _id: 1 }).lean(),
-        courseDB.findById(this.courseId, { _id: 1 }).lean(),
+        courseDB.findById(this.courseId, { _id: 1, teacherId: 1 }).lean(),
         purchaseDB.findOne({
           studentId: this.studentId,
           courseId: this.courseId,

@@ -3,6 +3,8 @@ import validateIds from "../utils/validateMongoId.js";
 import courseDB from "./database/course.js";
 import teacherDB from "./database/teacher.js";
 import { chapterInterface } from "../interfaces/interfaces.js";
+import studentBD from "./database/student.js";
+import purchaseDB from "./database/purchase.js";
 export default class Chapter {
   teacherId: string;
   courseId: string;
@@ -265,6 +267,68 @@ export default class Chapter {
         );
       });
       return { statusCode: 200, data: "Chapter Reordered" };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal server error" };
+    }
+  }
+  async getChapterForStudent(chapterId: string) {
+    try {
+      const studentId = this.teacherId;
+      const validate = validateIds([studentId, chapterId]);
+      if (!validate) return { statusCode: 400, data: "use Valid id" };
+      const [findStudent, findChapter] = await Promise.all([
+        studentBD.findById(this.teacherId, { _id: 1 }).lean(),
+        chapterDB
+          .findOne(
+            { _id: chapterId, isPublished: true },
+            { completed: 0, total: 0 }
+          )
+          .lean(),
+      ]);
+      if (!findStudent) return { statusCode: 404, data: "student not found" };
+      if (!findChapter) return { statusCode: 404, data: "chapter not found" };
+      const findPurchase = await purchaseDB.findOne({
+        studentId: findStudent._id,
+        courseId: findChapter.courseId,
+      });
+      console.log(findPurchase);
+      if (findPurchase)
+        return { statusCode: 200, data: { ...findChapter, enroll: true } };
+      else return { statusCode: 200, data: { ...findChapter, enroll: false } };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal server error" };
+    }
+  }
+  async getChaptersForStudent(courseId: string) {
+    try {
+      const studentId = this.teacherId;
+      const validate = validateIds([courseId, studentId]);
+      if (!validate) return { statusCode: 400, data: "use Valid id" };
+      const [findStudent, findCourse] = await Promise.all([
+        studentBD.findById(studentId, { _id: 1 }).lean(),
+        courseDB.findById(courseId, { completed: 0, total: 0 }).lean(),
+      ]);
+      if (!findStudent) return { statusCode: 404, data: "student not found" };
+      if (!findCourse) return { statusCode: 404, data: "course not found" };
+      const findPurchase = await purchaseDB.findOne({
+        studentId: findStudent._id,
+        courseId: courseId,
+      });
+      const chapters = await chapterDB
+        .find(
+          {
+            courseId: courseId,
+            isPublished: true,
+          },
+          { _id: 1 }
+        )
+        .sort({ position: 1 });
+      console.log(chapters);
+      if (findPurchase)
+        return { statusCode: 200, data: { chapters, enroll: true } };
+      else return { statusCode: 200, data: { chapters, enroll: false } };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal server error" };
