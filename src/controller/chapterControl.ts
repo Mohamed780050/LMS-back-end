@@ -170,6 +170,17 @@ async function getChaptersForStudent(req: Request, res: Response) {
     res.status(500).json({ data: "internal server Error" });
   }
 }
+async function completeChapter(req: Request, res: Response) {
+  try {
+    const { userId, chapterId } = req.params;
+    const myChapter = new Chapter(userId, req.body.courseId);
+    const response = await myChapter.complete(chapterId);
+    res.status(response.statusCode).json({ data: response.data });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ data: "internal server Error" });
+  }
+}
 
 export default {
   addNewChapter,
@@ -184,4 +195,5 @@ export default {
   reorderChapters,
   getChapterForStudent,
   getChaptersForStudent,
+  completeChapter,
 };
