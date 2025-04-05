@@ -363,9 +363,34 @@ export default class Chapter {
       if (!findStudent) return { statusCode: 404, data: "student not found" };
       if (!findChapter) return { statusCode: 404, data: "course not found" };
       if (!findPurchase) return { statusCode: 404, data: "purchase not found" };
+      const courseChapter = await courseDB
+        .findById(findChapter.courseId)
+        .populate({
+          path: "chapters", // assuming `chapters` is an array of ObjectId references
+          match: { isPublished: true }, // only include published chapters
+          select: "_id", // optional: select only needed fields
+        })
+        .lean();
+      if (!courseChapter) return { statusCode: 404, data: "course not found" };
+      await purchaseDB
+        .findOneAndUpdate(
+          { _id: findPurchase._id },
+          { $addToSet: { completedChapters: findChapter._id } }
+        )
+        .lean();
+      const updatedPurchase = await purchaseDB.findById(findPurchase._id);
+      if (!updatedPurchase)
+        return { statusCode: 404, data: "purchase not found" };
       await purchaseDB.findOneAndUpdate(
         { _id: findPurchase._id },
-        { $addToSet: { completedChapters: findChapter._id } }
+        {
+          $set: {
+            progress:
+              (updatedPurchase.completedChapters?.length /
+                courseChapter.chapters.length) *
+              100,
+          },
+        }
       );
       return { statusCode: 200, data: "chapter completed" };
     } catch (err) {
