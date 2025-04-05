@@ -68,8 +68,11 @@ class Student
       return {
         statusCode: 200,
         data: [
-          purchase.filter((course) => course.progress > 0).length,
-          purchase.filter((course) => course.completed).length,
+          purchase.filter(
+            (course) => course.progress > 0 && course.progress !== 100
+          ).length,
+          // TODO: make sure to add completed instead of progress
+          purchase.filter((course) => course.progress === 100).length,
           purchase.filter((course) => course.progress === 0).length,
           student.courses?.length,
         ],
