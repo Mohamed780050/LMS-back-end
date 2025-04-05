@@ -1,6 +1,8 @@
 import studentBD from "./database/student.js";
 import { studentInterface } from "../interfaces/interfaces";
 import bcrypt from "bcrypt";
+import validateIds from "../utils/validateMongoId.js";
+import purchaseDB from "./database/purchase.js";
 class Student
   implements
     Omit<
@@ -48,6 +50,33 @@ class Student
     } catch (err) {
       console.log(err);
       return { statusCode: 400, data: "something went wrong" };
+    }
+  }
+  static async infoCard(studentId: string) {
+    try {
+      const validId = validateIds([studentId]);
+      if (!validId) return { statusCode: 400, data: "something went wrong" };
+      const [student, purchase] = await Promise.all([
+        studentBD.findById(studentId, { _id: 1, courses: 1 }).lean(),
+        purchaseDB.find({ studentId: studentId }).lean(),
+      ]);
+
+      console.log(student);
+      if (!student) return { statusCode: 404, data: "student not found" };
+      if (!purchase) return { statusCode: 404, data: "purchase not found" };
+      // TODO: Remember to use grouping in here
+      return {
+        statusCode: 200,
+        data: [
+          purchase.filter((course) => course.progress > 0).length,
+          purchase.filter((course) => course.completed).length,
+          purchase.filter((course) => course.progress === 0).length,
+          student.courses?.length,
+        ],
+      };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "something went wrong" };
     }
   }
 }

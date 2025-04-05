@@ -25,4 +25,19 @@ async function addNewStudent(req: Request, res: Response) {
     console.log(err);
   }
 }
-export default { getAllStudents, addNewStudent };
+async function getInfoCard(req: Request, res: Response) {
+  try {
+    const {userId} = req.params
+    if (!userId) {
+      res
+        .status(400)
+        .json({ message: "Please provide all the required fields" });
+      return;
+    }
+    const response = await Student.infoCard(userId);
+    res.status(response.statusCode).json({ data: response.data });
+  } catch (err) {
+    console.log(err);
+  }
+}
+export default { getAllStudents, addNewStudent, getInfoCard };
