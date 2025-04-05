@@ -73,9 +73,23 @@ async function getAllPublishedCourses(req: Request, res: Response) {
     console.log(err);
   }
 }
+async function getAllEnrolledCourses(req: Request, res: Response) {
+  try {
+    const { userId } = req.params;
+    if (!userId) {
+      res.status(400).json({ data: "Teacher ID is required" });
+      return;
+    }
+    const response = await Courses.getAllEnrolledCourses(userId);
+    res.status(response.statusCode).json(response.data);
+  } catch (err) {
+    console.log(err);
+  }
+}
 export default {
   getTeacherCourses,
   getAllCourses,
   getCoursesNumber,
   getAllPublishedCourses,
+  getAllEnrolledCourses,
 };

@@ -1,4 +1,7 @@
+import validateIds from "../utils/validateMongoId.js";
 import courseDB from "./database/course.js";
+import purchaseDB from "./database/purchase.js";
+import studentBD from "./database/student.js";
 import teacherDB from "./database/teacher.js";
 import mongoose from "mongoose";
 
@@ -118,6 +121,52 @@ export default class Courses {
         { $limit: 10 },
       ]);
       return { statusCode: 200, data: publishedCourses };
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500, data: "Internal server error" };
+    }
+  }
+  static async getAllEnrolledCourses(studentId: string) {
+    try {
+      const validId = validateIds([studentId]);
+      if (!validId) return { statusCode: 400, data: "In valid id" };
+      const findStudent = await studentBD.findById(studentId);
+      if (!findStudent) return { statusCode: 404, data: "student not found" };
+      const findPurchases = await purchaseDB.aggregate([
+        {
+          $match: { studentId }, // Make sure `studentId` is provided correctly
+        },
+        {
+          $addFields: {
+            courseIdObject: { $toObjectId: "$courseId" }, // Convert `courseId` string to ObjectId
+          },
+        },
+        {
+          $lookup: {
+            from: "courses", // Collection name for courses
+            localField: "courseIdObject", // The newly converted ObjectId field
+            foreignField: "_id", // The actual ObjectId field in the `courses` collection
+            as: "courseInfo",
+          },
+        },
+        {
+          $unwind: "$courseInfo", // Flatten array to single object (if you expect only one match)
+        },
+        {
+          $project: {
+            completedChapters: 1,
+            progress: 1,
+            completed: 1,
+            courseInfo: {
+              _id: 1,
+              courseName: 1,
+              category: 1,
+              image: { url: 1, secure_url: 1 },
+            },
+          },
+        },
+      ]);
+      return { statusCode: 200, data: findPurchases };
     } catch (err) {
       console.log(err);
       return { statusCode: 500, data: "Internal server error" };
