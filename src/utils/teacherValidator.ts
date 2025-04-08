@@ -1,15 +1,6 @@
-import Ajv, { JSONSchemaType } from "ajv";
-import { teacherInterface } from "../interfaces/interfaces";
+import Ajv from "ajv";
 
-const Schema: JSONSchemaType<
-  Omit<
-    teacherInterface,
-    | "resetPasswordToken"
-    | "resetPasswordTokenExpire"
-    | "verificationCode"
-    | "verificationCodeExpire"
-  >
-> = {
+const Schema = {
   type: "object",
   properties: {
     userName: {
